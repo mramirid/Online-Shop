@@ -3,7 +3,7 @@ import path from 'path'
 import express from 'express'
 import bodyParser from 'body-parser'
 
-import currDir from './utils/path'
+import activeDir from './utils/path'
 import adminRoutes from './routes/admin'
 import shopRoutes from './routes/shop'
 import * as errorController from './controllers/error'
@@ -14,7 +14,7 @@ app.set('view engine', 'ejs')
 app.set('views', 'dist/views')
 
 app.use(bodyParser.urlencoded({ extended: false }))
-app.use(express.static(path.join(currDir, 'public')))
+app.use(express.static(path.join(activeDir, 'public')))
 
 app.use('/admin', adminRoutes)
 app.use(shopRoutes)
