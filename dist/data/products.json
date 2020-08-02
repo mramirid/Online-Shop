@@ -1,1 +1,9 @@
-[{"title":"Macbook","imageUrl":"https://store.storeimages.cdn-apple.com/8756/as-images.apple.com/is/mbp16touch-space-select-201911_GEO_AU?wid=892&hei=820&&qlt=80&.v=1573242755595","description":"Laptop Mahal","price":"9999.99"}]
+[
+  {
+    "id": "123",
+    "title": "Macbook",
+    "imageUrl": "https://store.storeimages.cdn-apple.com/8756/as-images.apple.com/is/mbp16touch-space-select-201911_GEO_AU?wid=892&hei=820&&qlt=80&.v=1573242755595",
+    "description": "Laptop Mahal",
+    "price": "9999.99"
+  }
+]

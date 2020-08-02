@@ -8,7 +8,7 @@
 	<main>
 		<% if (products.length > 0) { %>
 			<div class="grid">
-				<% for (let product of products) { %>
+				<% for (const product of products) { %>
 					<article class="card product-item">
 						<header class="card__header">
 							<h1 class="product__title">
@@ -30,10 +30,8 @@
 						</div>
 						
 						<div class="card__actions">
-							<a href="/" class="btn">Details</a>
-							<form action="/add-to-cart" method="POST">
-								<button class="btn">Add to Cart</button>
-							</form>
+							<a href="/products/<%= product.id %>" class="btn">Details</a>
+							<%- include('../includes/add-to-cart.ejs', { product }) %>
 						</div>
 					</article>
 				<% } %>

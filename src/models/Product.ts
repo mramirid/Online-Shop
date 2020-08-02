@@ -5,9 +5,7 @@ import activeDir from '../utils/path'
 
 const filePath = path.join(activeDir, 'data', 'products.json')
 
-type CallbackType = (products: Product[]) => void
-
-const getProductsFromFile = (callback: CallbackType) => {
+const getProductsFromFile = (callback: (products: Product[]) => void) => {
   fs.readFile(filePath, (err, fileContent) => {
     if (err) callback([])
     else callback(JSON.parse(fileContent.toString()))
@@ -15,6 +13,8 @@ const getProductsFromFile = (callback: CallbackType) => {
 }
 
 export default class Product {
+  private id!: string
+
   constructor(
     public title: string,
     public imageUrl: string,
@@ -23,6 +23,7 @@ export default class Product {
   ) { }
 
   save() {
+    this.id = Math.random().toString()
     getProductsFromFile(products => {
       products.push(this)
       fs.writeFile(filePath, JSON.stringify(products), err => {
@@ -31,7 +32,14 @@ export default class Product {
     })
   }
 
-  static fetchAll(callback: CallbackType) {
+  static fetchAll(callback: (products: Product[]) => void) {
     getProductsFromFile(callback)
+  }
+
+  static findById(id: string, callback: (product: Product) => void) {
+    getProductsFromFile(products => {
+      const product = products.find(product => product.id === id)!
+      callback(product)
+    })
   }
 }

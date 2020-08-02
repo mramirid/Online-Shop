@@ -7,7 +7,18 @@ export const getProducts: RequestHandler = (_, res) => {
     res.render('shop/product-list', {
       pageTitle: 'All Products',
       path: '/products',
-      products 
+      products
+    })
+  })
+}
+
+export const getProduct: RequestHandler = (req, res) => {
+  const productId = req.params.productId
+  Product.findById(productId, product => {
+    res.render('shop/product-detail', {
+      pageTitle: product.title,
+      path: '/products',
+      product
     })
   })
 }
@@ -17,7 +28,7 @@ export const getIndex: RequestHandler = (_, res) => {
     res.render('shop/index', {
       pageTitle: 'Shop',
       path: '/',
-      products 
+      products
     })
   })
 }
@@ -27,6 +38,11 @@ export const getCart: RequestHandler = (_, res) => {
     pageTitle: 'Your Cart',
     path: '/cart'
   })
+}
+
+export const postCart: RequestHandler = (req, res) => {
+  const productId = req.body.productId
+  res.redirect('/cart')
 }
 
 export const getOrders: RequestHandler = (_, res) => {
