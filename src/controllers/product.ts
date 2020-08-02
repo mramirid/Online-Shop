@@ -3,7 +3,7 @@ import { RequestHandler } from "express"
 import Product from '../models/Product'
 
 export const getAddProduct: RequestHandler = (_, res) => {
-  res.render('add-product', {
+  res.render('admin/add-product', {
     pageTitle: 'Add Product',
     path: '/admin/add-product'
   })
@@ -17,7 +17,7 @@ export const postAddProduct: RequestHandler = (req, res) => {
 
 export const getProducts: RequestHandler = (_, res) => {
   Product.fetchAll(products => {
-    res.render('shop', {
+    res.render('shop/product-list', {
       pageTitle: 'Shop',
       path: '/',
       products 
