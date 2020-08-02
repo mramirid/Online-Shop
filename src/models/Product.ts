@@ -13,7 +13,7 @@ const getProductsFromFile = (callback: (products: Product[]) => void) => {
 }
 
 export default class Product {
-  private id!: string
+  id!: string
 
   constructor(
     public title: string,

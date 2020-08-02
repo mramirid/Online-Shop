@@ -1,6 +1,7 @@
-import { RequestHandler } from "express"
+import { RequestHandler } from 'express'
 
 import Product from '../models/Product'
+import Cart from '../models/Cart'
 
 export const getProducts: RequestHandler = (_, res) => {
   Product.fetchAll(products => {
@@ -42,7 +43,10 @@ export const getCart: RequestHandler = (_, res) => {
 
 export const postCart: RequestHandler = (req, res) => {
   const productId = req.body.productId
-  res.redirect('/cart')
+  Product.findById(productId, (product => {
+    Cart.addProduct(productId, product.price)
+    res.redirect('/cart')
+  }))
 }
 
 export const getOrders: RequestHandler = (_, res) => {

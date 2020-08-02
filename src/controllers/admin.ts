@@ -15,8 +15,6 @@ export const postAddProduct: RequestHandler = (req, res) => {
   const description: string = req.body.description
   const price: number = req.body.price
 
-  console.log(title, imageUrl, description, price)
-  
   const product = new Product(title, imageUrl, description, price)
   product.save()
   res.redirect('/')
