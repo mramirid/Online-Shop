@@ -63,6 +63,14 @@ export const postCart: RequestHandler = (req, res) => {
   }))
 }
 
+export const postCartDeleteProduct: RequestHandler = (req, res) => {
+  const productId = req.body.productId
+  Product.findById(productId, product => {
+    Cart.deleteProduct(productId, product.price)
+    res.redirect('/cart')
+  })
+}
+
 export const getOrders: RequestHandler = (_, res) => {
   res.render('shop/orders', {
     pageTitle: 'Your Orders',
