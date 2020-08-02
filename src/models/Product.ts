@@ -13,9 +13,8 @@ const getProductsFromFile = (callback: (products: Product[]) => void) => {
 }
 
 export default class Product {
-  id!: string
-
   constructor(
+    public id: string | null,
     public title: string,
     public imageUrl: string,
     public description: string,
@@ -23,9 +22,14 @@ export default class Product {
   ) { }
 
   save() {
-    this.id = Math.random().toString()
     getProductsFromFile(products => {
-      products.push(this)
+      if (this.id) {
+        const existingProduct = products.findIndex(product => product.id === this.id)
+        products[existingProduct] = this
+      } else {
+        this.id = Math.random().toString()
+        products.push(this)
+      }
       fs.writeFile(filePath, JSON.stringify(products), err => {
         console.log(err)
       })

@@ -24,7 +24,7 @@ export default class Cart {
       if (!err) {
         cart = JSON.parse(fileContent.toString())
       }
-      
+
       // Analyze the cart => find existing product
       let updatedProduct: SavedProductEntity
       const existingProductIndex = cart.products.findIndex(product => product.id === id)
@@ -37,9 +37,9 @@ export default class Cart {
         cart.products[existingProductIndex] = updatedProduct
       } else {
         updatedProduct = { id, qty: 1 }
-        cart.products = [...cart.products, updatedProduct ]
+        cart.products = [...cart.products, updatedProduct]
       }
- 
+
       cart.totalPrice += +productPrice
 
       fs.writeFile(filePath, JSON.stringify(cart), (err) => {
