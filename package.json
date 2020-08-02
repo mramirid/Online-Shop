@@ -1,14 +1,14 @@
 {
-  "name": "node-basics",
+  "name": "online-shop",
   "version": "1.0.0",
-  "description": "Basics",
+  "description": "Simple online shop with Node, TypeScript & Express framework",
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon dist/app.js"
   },
   "keywords": [
-    "learning"
+    "typescript"
   ],
   "author": "mramirid",
   "license": "ISC",

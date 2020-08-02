@@ -2,6 +2,7 @@ import fs from 'fs'
 import path from 'path'
 
 import activeDir from '../utils/path'
+import Cart from '../models/Cart'
 
 const filePath = path.join(activeDir, 'data', 'products.json')
 
@@ -32,6 +33,19 @@ export default class Product {
       }
       fs.writeFile(filePath, JSON.stringify(products), err => {
         console.log(err)
+      })
+    })
+  }
+
+  static deleteById(id: string) {
+    getProductsFromFile(products => {
+      const product = products.find(product => product.id === id)!
+      const updatedProducts = products.filter(product => product.id !== id)
+
+      fs.writeFile(filePath, JSON.stringify(updatedProducts), err => {
+        if (!err) {
+          Cart.deleteProduct(id, product.price)
+        }
       })
     })
   }

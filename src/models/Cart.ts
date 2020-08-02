@@ -47,4 +47,21 @@ export default class Cart {
       })
     })
   }
+
+  static deleteProduct(id: string, productPrice: number) {
+    fs.readFile(filePath, (err, fileContent) => {
+      if (err) return
+
+      const updatedCart: CartEntity = { ...JSON.parse(fileContent.toString()) }
+      const product = updatedCart.products.find(product => product.id === id)!
+      const productQty = product.qty
+
+      updatedCart.products = updatedCart.products.filter(product => product.id != id)
+      updatedCart.totalPrice -= (productPrice * productQty)
+
+      fs.writeFile(filePath, JSON.stringify(updatedCart), err => {
+        console.log(err)
+      })
+    })
+  }
 }
