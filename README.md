@@ -4,10 +4,14 @@ On progress
 
 ## How to run?
 
-1. Compile the TypeScript sources
+1. NPM install first!
+
+> $ npm install
+
+2. Compile the TypeScript sources
 
 > $ tsc --watch
 
-2. Run nodemon using my configuration
+3. Run nodemon using my configuration
 
 > $ npm start

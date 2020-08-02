@@ -53,7 +53,8 @@ export default class Cart {
       if (err) return
 
       const updatedCart: CartEntity = { ...JSON.parse(fileContent.toString()) }
-      const product = updatedCart.products.find(product => product.id === id)!
+      const product = updatedCart.products.find(product => product.id === id)
+      if (!product) return
       const productQty = product.qty
 
       updatedCart.products = updatedCart.products.filter(product => product.id != id)
