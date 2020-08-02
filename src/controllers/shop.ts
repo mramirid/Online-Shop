@@ -35,9 +35,23 @@ export const getIndex: RequestHandler = (_, res) => {
 }
 
 export const getCart: RequestHandler = (_, res) => {
-  res.render('shop/cart', {
-    pageTitle: 'Your Cart',
-    path: '/cart'
+  Cart.getCart(cart => {
+    Product.fetchAll(products => {
+      const cartProducts = []
+
+      for (const product of products) {
+        const cartProductData = cart?.products.find(cartProduct => cartProduct.id === product.id)
+        if (cartProductData) {
+          cartProducts.push({ product, qty: cartProductData.qty })
+        }
+      }
+
+      res.render('shop/cart', {
+        pageTitle: 'Your Cart',
+        path: '/cart',
+        cartProducts
+      })
+    })
   })
 }
 

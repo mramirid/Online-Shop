@@ -21,12 +21,13 @@ export const getAddProduct: RequestHandler = (_, res) => {
 }
 
 export const postAddProduct: RequestHandler = (req, res) => {
-  const title: string = req.body.title
-  const imageUrl: string = req.body.imageUrl
-  const description: string = req.body.description
-  const price: number = req.body.price
-
-  const product = new Product(null, title, imageUrl, description, price)
+  const product = new Product(
+    null,
+    req.body.title,
+    req.body.imageUrl,
+    req.body.description,
+    req.body.price
+  )
   product.save()
   res.redirect('/')
 }

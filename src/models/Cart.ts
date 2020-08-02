@@ -64,4 +64,12 @@ export default class Cart {
       })
     })
   }
+
+  static getCart(callback: (cart: CartEntity | null) => void) {
+    fs.readFile(filePath, (err, fileContent) => {
+      const cart = JSON.parse(fileContent.toString()) as CartEntity
+      if (err) callback(null)
+      else callback(cart)
+    })
+  }
 }
