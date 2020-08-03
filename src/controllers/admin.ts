@@ -2,9 +2,9 @@ import { RequestHandler } from "express"
 
 import Product from '../models/Product'
 
-export const getProducts: RequestHandler = async (_, res) => {
+export const getProducts: RequestHandler = async (req, res) => {
   try {
-    const products = await Product.findAll()
+    const products = await req.user!.getProducts()
     res.render('admin/product-list', {
       pageTitle: 'Admin Products',
       path: '/admin/products',
@@ -25,12 +25,11 @@ export const getAddProduct: RequestHandler = (_, res) => {
 
 export const postAddProduct: RequestHandler = async (req, res) => {
   try {
-    await Product.create({
+    req.user!.createProduct({
       title: req.body.title,
       price: req.body.price,
       imageUrl: req.body.imageUrl,
       description: req.body.description,
-      userId: req.user!.id
     })
     console.log('Product created successfully')
     res.redirect('/admin/products')
@@ -46,10 +45,9 @@ export const getEditProduct: RequestHandler = async (req, res) => {
 
   try {
     const productId = req.params.productId
-    const product = await Product.findByPk(productId)
-
+    const [product] = await req.user!.getProducts({ where: { id: productId } })
     if (!product) return res.redirect('/')
-
+    
     res.render('admin/edit-product', {
       pageTitle: 'Edit Product',
       path: '/admin/edit-product',

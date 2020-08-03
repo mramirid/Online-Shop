@@ -2,7 +2,7 @@
 
 On progress
 
-## How to run?
+<!-- ## How to run?
 
 1. NPM install first!
 
@@ -14,4 +14,4 @@ On progress
 
 3. Run nodemon using my configuration
 
-> $ npm start
+> $ npm start -->

@@ -34,8 +34,11 @@ app.use(shopRoutes)
 app.use(errorController.get404)
 
 // User -> Products
-Product.belongsTo(User, { constraints: true, onDelete: 'CASCADE' })
-User.hasMany(Product)
+User.hasMany(Product, {
+  sourceKey: 'id',
+  foreignKey: 'userId',
+  onDelete: 'CASCADE'
+})
 
 // Setup dummy user (temp)
 sequelize.sync()
