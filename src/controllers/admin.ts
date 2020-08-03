@@ -2,14 +2,17 @@ import { RequestHandler } from "express"
 
 import Product from '../models/Product'
 
-export const getProducts: RequestHandler = (_, res) => {
-  Product.fetchAll(products => {
+export const getProducts: RequestHandler = async (_, res) => {
+  try {
+    const products = await Product.findAll()
     res.render('admin/product-list', {
       pageTitle: 'Admin Products',
       path: '/admin/products',
       products
     })
-  })
+  } catch (error) {
+    console.log(error)
+  }
 }
 
 export const getAddProduct: RequestHandler = (_, res) => {
@@ -20,7 +23,7 @@ export const getAddProduct: RequestHandler = (_, res) => {
   })
 }
 
-export const postAddProduct: RequestHandler = async (req, res) => { 
+export const postAddProduct: RequestHandler = async (req, res) => {
   try {
     await Product.create({
       title: req.body.title,
@@ -34,16 +37,20 @@ export const postAddProduct: RequestHandler = async (req, res) => {
   }
 }
 
-export const getEditProduct: RequestHandler = (req, res) => {
+export const getEditProduct: RequestHandler = async (req, res) => {
   const editMode = req.query.edit
 
   if (!editMode) {
     return res.redirect('/')
   }
 
-  const productId = req.params.productId
-  Product.findById(productId, product => {
-    if (!product) return res.redirect('/')
+  try {
+    const productId = req.params.productId
+    const product = await Product.findByPk(productId)
+
+    if (!product) {
+      return res.redirect('/')
+    }
 
     res.render('admin/edit-product', {
       pageTitle: 'Edit Product',
@@ -51,18 +58,30 @@ export const getEditProduct: RequestHandler = (req, res) => {
       isEdit: true,
       product
     })
-  })
+  } catch (error) {
+    console.log(error)
+  }
 }
 
-export const postEditProduct: RequestHandler = (req, res) => {
-  const updatedProduct = new Product(
-    req.body.productId,
-    req.body.title,
-    req.body.imageUrl,
-    req.body.description,
-    req.body.price,
-  )
-  updatedProduct.save()
+export const postEditProduct: RequestHandler = async (req, res) => {
+  try {
+    const product = await Product.findByPk(req.body.productId)
+
+    if (!product) throw new Error('Product not found')
+
+    product.id = req.body.productId
+    product.title = req.body.title
+    product.imageUrl = req.body.imageUrl
+    product.description = req.body.description
+    product.price = req.body.price
+
+    await product.save()
+    console.log('Product updated successfully')
+
+  } catch (error) {
+    console.log(error)
+  }
+
   res.redirect('/admin/products')
 }
 

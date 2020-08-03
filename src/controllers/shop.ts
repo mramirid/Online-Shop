@@ -19,10 +19,9 @@ export const getProducts: RequestHandler = async (_, res) => {
 export const getProduct: RequestHandler = async (req, res) => {
   const productId = req.params.productId
   try {
-    const [[product]] = await Product.findById(productId)
-    console.log(product)
+    const product = await Product.findByPk(productId)
     res.render('shop/product-detail', {
-      pageTitle: product.title,
+      pageTitle: product!.title,
       path: '/products',
       product
     })
