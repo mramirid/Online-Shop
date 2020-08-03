@@ -1,42 +1,40 @@
-import { RowDataPacket } from 'mysql2'
+import { Optional, Model, DataTypes } from 'sequelize'
 
-import db from '../utils/database'
-import Cart from '../models/Cart'
+import sequelize from '../utils/database'
 
-interface RowProduct extends RowDataPacket {
-  id: string | null,
-  title: string,
-  imageUrl: string,
-  description: string,
+interface ProductAttributes {
+  id: string
+  title: string
   price: number
+  imageUrl: string
+  description: string
 }
 
-export default class Product {
-  constructor(
-    public id: string | null,
-    public title: string,
-    public imageUrl: string,
-    public description: string,
-    public price: number
-  ) { }
+interface ProductCreationAttributes extends Optional<ProductAttributes, 'id'> { }
 
-  save() {
-    return db.execute(
-      `INSERT INTO products (title, price, description, imageUrl)
-       VALUES (?, ?, ?, ?)`,
-      [this.title, this.price, this.description, this.imageUrl]
-    )
+interface ProductInstance extends Model<ProductAttributes, ProductCreationAttributes>, ProductAttributes { }
+
+export default sequelize.define<ProductInstance>('product', {
+  id: {
+    type: DataTypes.INTEGER,
+    autoIncrement: true,
+    allowNull: false,
+    primaryKey: true
+  },
+  title: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
+  price: {
+    type: DataTypes.DOUBLE,
+    allowNull: false
+  },
+  imageUrl: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
+  description: {
+    type: DataTypes.STRING,
+    allowNull: false
   }
-
-  static deleteById(id: string) {
-
-  }
-
-  static fetchAll() {
-    return db.execute<RowProduct[]>('SELECT * FROM products')
-  }
-
-  static findById(id: string) {
-    return db.execute<RowProduct[]>('SELECT * FROM products WHERE products.id = ? LIMIT 1', [id])
-  }
-}
+})
