@@ -20,18 +20,15 @@ export const getAddProduct: RequestHandler = (_, res) => {
   })
 }
 
-export const postAddProduct: RequestHandler = async (req, res) => {
-  const product = new Product(
-    null,
-    req.body.title,
-    req.body.imageUrl,
-    req.body.description,
-    req.body.price
-  )
-
+export const postAddProduct: RequestHandler = async (req, res) => { 
   try {
-    await product.save()
-    res.redirect('/')
+    await Product.create({
+      title: req.body.title,
+      price: req.body.price,
+      imageUrl: req.body.imageUrl,
+      description: req.body.description
+    })
+    console.log('Product created successfully')
   } catch (error) {
     console.log(error)
   }
