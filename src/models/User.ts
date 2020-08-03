@@ -3,7 +3,7 @@ import { Optional, Model, DataTypes } from 'sequelize'
 import sequelize from '../utils/database'
 
 interface UserAttributes {
-  id: string
+  id: number
   name: string
   email: string
 }
@@ -25,3 +25,12 @@ export default sequelize.define<UserInstance>('user', {
   },
   email: DataTypes.STRING
 })
+
+// Customize the express Request interface
+declare global {
+  namespace Express {
+    export interface Request {
+      user: UserInstance | null
+    }
+  }
+}

@@ -4,11 +4,14 @@ import sequelize from '../utils/database'
 
 // For stricter typechecking
 interface ProductAttributes {
-  id: string
+  id: number
   title: string
   price: number
   imageUrl: string
-  description: string
+  description: string,
+  createdAt?: Date,
+  updatedAt?: Date,
+  userId: number
 }
 
 // Some fields are optional when calling UserModel.create() or UserModel.build()
@@ -38,6 +41,12 @@ export default sequelize.define<ProductInstance>('product', {
   },
   description: {
     type: DataTypes.STRING,
+    allowNull: false
+  },
+  createdAt: DataTypes.DATE,
+  updatedAt: DataTypes.DATE,
+  userId: {
+    type: DataTypes.INTEGER,
     allowNull: false
   }
 })
