@@ -3,35 +3,45 @@ import { RequestHandler } from 'express'
 import Product from '../models/Product'
 import Cart from '../models/Cart'
 
-export const getProducts: RequestHandler = (_, res) => {
-  Product.fetchAll(products => {
+export const getProducts: RequestHandler = async (_, res) => {
+  try {
+    const [rows] = await Product.fetchAll()
     res.render('shop/product-list', {
       pageTitle: 'All Products',
       path: '/products',
-      products
+      products: rows
     })
-  })
+  } catch (error) {
+    console.log(error)
+  }
 }
 
-export const getProduct: RequestHandler = (req, res) => {
+export const getProduct: RequestHandler = async (req, res) => {
   const productId = req.params.productId
-  Product.findById(productId, product => {
+  try {
+    const [[product]] = await Product.findById(productId)
+    console.log(product)
     res.render('shop/product-detail', {
       pageTitle: product.title,
       path: '/products',
       product
     })
-  })
+  } catch (error) {
+    console.log(error)
+  }
 }
 
-export const getIndex: RequestHandler = (_, res) => {
-  Product.fetchAll(products => {
+export const getIndex: RequestHandler = async (_, res) => {
+  try {
+    const [rows] = await Product.fetchAll()
     res.render('shop/index', {
       pageTitle: 'Shop',
       path: '/',
-      products
+      products: rows
     })
-  })
+  } catch (error) {
+    console.log(error)
+  }
 }
 
 export const getCart: RequestHandler = (_, res) => {

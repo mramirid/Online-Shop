@@ -1,16 +1,14 @@
-import fs from 'fs'
-import path from 'path'
+import { RowDataPacket } from 'mysql2'
 
-import activeDir from '../utils/path'
+import db from '../utils/database'
 import Cart from '../models/Cart'
 
-const filePath = path.join(activeDir, 'data', 'products.json')
-
-const getProductsFromFile = (callback: (products: Product[]) => void) => {
-  fs.readFile(filePath, (err, fileContent) => {
-    if (err) callback([])
-    else callback(JSON.parse(fileContent.toString()))
-  })
+interface RowProduct extends RowDataPacket {
+  id: string | null,
+  title: string,
+  imageUrl: string,
+  description: string,
+  price: number
 }
 
 export default class Product {
@@ -23,41 +21,22 @@ export default class Product {
   ) { }
 
   save() {
-    getProductsFromFile(products => {
-      if (this.id) {
-        const existingProduct = products.findIndex(product => product.id === this.id)
-        products[existingProduct] = this
-      } else {
-        this.id = Math.random().toString()
-        products.push(this)
-      }
-      fs.writeFile(filePath, JSON.stringify(products), err => {
-        console.log(err)
-      })
-    })
+    return db.execute(
+      `INSERT INTO products (title, price, description, imageUrl)
+       VALUES (?, ?, ?, ?)`,
+      [this.title, this.price, this.description, this.imageUrl]
+    )
   }
 
   static deleteById(id: string) {
-    getProductsFromFile(products => {
-      const product = products.find(product => product.id === id)!
-      const updatedProducts = products.filter(product => product.id !== id)
 
-      fs.writeFile(filePath, JSON.stringify(updatedProducts), err => {
-        if (!err) {
-          Cart.deleteProduct(id, product.price)
-        }
-      })
-    })
   }
 
-  static fetchAll(callback: (products: Product[]) => void) {
-    getProductsFromFile(callback)
+  static fetchAll() {
+    return db.execute<RowProduct[]>('SELECT * FROM products')
   }
 
-  static findById(id: string, callback: (product: Product) => void) {
-    getProductsFromFile(products => {
-      const product = products.find(product => product.id === id)!
-      callback(product)
-    })
+  static findById(id: string) {
+    return db.execute<RowProduct[]>('SELECT * FROM products WHERE products.id = ? LIMIT 1', [id])
   }
 }

@@ -20,7 +20,7 @@ export const getAddProduct: RequestHandler = (_, res) => {
   })
 }
 
-export const postAddProduct: RequestHandler = (req, res) => {
+export const postAddProduct: RequestHandler = async (req, res) => {
   const product = new Product(
     null,
     req.body.title,
@@ -28,8 +28,13 @@ export const postAddProduct: RequestHandler = (req, res) => {
     req.body.description,
     req.body.price
   )
-  product.save()
-  res.redirect('/')
+
+  try {
+    await product.save()
+    res.redirect('/')
+  } catch (error) {
+    console.log(error)
+  }
 }
 
 export const getEditProduct: RequestHandler = (req, res) => {
