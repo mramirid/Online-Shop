@@ -5,11 +5,11 @@ import Cart from '../models/Cart'
 
 export const getProducts: RequestHandler = async (_, res) => {
   try {
-    const [rows] = await Product.fetchAll()
+    const products = await Product.findAll()
     res.render('shop/product-list', {
       pageTitle: 'All Products',
       path: '/products',
-      products: rows
+      products
     })
   } catch (error) {
     console.log(error)
@@ -33,11 +33,11 @@ export const getProduct: RequestHandler = async (req, res) => {
 
 export const getIndex: RequestHandler = async (_, res) => {
   try {
-    const [rows] = await Product.fetchAll()
+    const products = await Product.findAll()
     res.render('shop/index', {
       pageTitle: 'Shop',
       path: '/',
-      products: rows
+      products
     })
   } catch (error) {
     console.log(error)
