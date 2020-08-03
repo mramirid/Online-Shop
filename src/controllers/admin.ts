@@ -32,6 +32,7 @@ export const postAddProduct: RequestHandler = async (req, res) => {
       description: req.body.description
     })
     console.log('Product created successfully')
+    res.redirect('/admin/products')
   } catch (error) {
     console.log(error)
   }
@@ -40,17 +41,13 @@ export const postAddProduct: RequestHandler = async (req, res) => {
 export const getEditProduct: RequestHandler = async (req, res) => {
   const editMode = req.query.edit
 
-  if (!editMode) {
-    return res.redirect('/')
-  }
+  if (!editMode) return res.redirect('/')
 
   try {
     const productId = req.params.productId
     const product = await Product.findByPk(productId)
 
-    if (!product) {
-      return res.redirect('/')
-    }
+    if (!product) return res.redirect('/')
 
     res.render('admin/edit-product', {
       pageTitle: 'Edit Product',
@@ -77,16 +74,22 @@ export const postEditProduct: RequestHandler = async (req, res) => {
 
     await product.save()
     console.log('Product updated successfully')
-
+    res.redirect('/admin/products')
   } catch (error) {
     console.log(error)
   }
-
-  res.redirect('/admin/products')
 }
 
-export const postDeleteProduct: RequestHandler = (req, res) => {
-  const productId = req.body.productId
-  Product.deleteById(productId)
-  res.redirect('/admin/products')
+export const postDeleteProduct: RequestHandler = async (req, res) => {
+  try {
+    await Product.destroy({
+      where: {
+        id: req.body.productId
+      }
+    })
+    console.log('Product deleted successfully')
+    res.redirect('/admin/products')
+  } catch (error) {
+    console.log(error)
+  }
 }
