@@ -24,12 +24,18 @@ Please modify the HasManyAddAssociationMixinOptions interface definition to avoi
 
 2. Run npm install
 
-> $ npm install
+```bash 
+$ npm install
+```
 
 3. Compile the TypeScript sources
 
-> $ tsc --watch
+```bash 
+$ tsc --watch
+```
 
 4. Run nodemon using my configuration
 
-> $ npm start
+```bash 
+$ npm start
+```
