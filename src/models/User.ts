@@ -10,6 +10,7 @@ import {
 import sequelize from '../utils/database'
 import Product from './Product'
 import Cart from './Cart'
+import Order from './Order'
 
 class User extends Model {
   id!: number
@@ -19,10 +20,12 @@ class User extends Model {
   readonly createdAt!: Date
   readonly updatedAt!: Date
 
-  getProducts!: HasManyGetAssociationsMixin<Product>
   createProduct!: HasManyCreateAssociationMixin<Product>
-  getCart!: HasOneGetAssociationMixin<Cart>
+  getProducts!: HasManyGetAssociationsMixin<Product>
   createCart!: HasOneCreateAssociationMixin<Cart>
+  getCart!: HasOneGetAssociationMixin<Cart>
+  createOrder!: HasManyCreateAssociationMixin<Order>
+  getOrders!: HasManyGetAssociationsMixin<Order>
 }
 
 User.init(

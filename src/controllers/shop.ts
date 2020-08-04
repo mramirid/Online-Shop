@@ -1,7 +1,6 @@
 import { RequestHandler } from 'express'
 
 import Product from '../models/Product'
-import Cart from '../models/Cart'
 
 export const getProducts: RequestHandler = async (_, res) => {
   try {
@@ -95,11 +94,36 @@ export const postCartDeleteProduct: RequestHandler = async (req, res) => {
   }
 }
 
-export const getOrders: RequestHandler = (_, res) => {
-  res.render('shop/orders', {
-    pageTitle: 'Your Orders',
-    path: '/orders'
-  })
+export const postOrder: RequestHandler = async (req, res) => {
+  try {
+    const cart = await req.user!.getCart()
+    const products = await cart.getProducts()
+
+    const order = await req.user!.createOrder()
+    await order.addProducts(products.map(product => {
+      product.OrderItem = { quantity: product.CartItem.quantity }
+      return product
+    }))
+
+    await cart.setProducts(undefined) // Clear cart
+    res.redirect('/orders')
+
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+export const getOrders: RequestHandler = async (req, res) => {
+  try {
+    const orders = await req.user!.getOrders({ include: ['Products'] })
+    res.render('shop/orders', {
+      pageTitle: 'Your Orders',
+      path: '/orders',
+      orders
+    })
+  } catch (error) {
+    console.log(error)
+  }
 }
 
 export const getCheckout: RequestHandler = (_, res) => {

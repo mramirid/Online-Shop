@@ -2,7 +2,8 @@ import {
   Model,
   DataTypes,
   HasManyGetAssociationsMixin,
-  HasManyAddAssociationMixin
+  HasManyAddAssociationMixin,
+  HasManySetAssociationsMixin
 } from 'sequelize'
 
 import sequelize from '../utils/database'
@@ -16,6 +17,7 @@ class Cart extends Model {
 
   getProducts!: HasManyGetAssociationsMixin<Product>
   addProduct!: HasManyAddAssociationMixin<Product, number>
+  setProducts!: HasManySetAssociationsMixin<Product, number>
 }
 
 Cart.init(

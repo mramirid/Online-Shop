@@ -54,8 +54,9 @@ sequelize.sync()
   })
   .then(dummyUser => {
     if (!dummyUser) {
-      User.create({ name: 'Amir', email: 'amir@test.com' })
+      return User.create({ name: 'Amir', email: 'amir@test.com' })
     }
+    return dummyUser
   })
   // .then(dummyUser => {
   //   return dummyUser.createCart()

@@ -4,7 +4,7 @@ On progress
 
 ## Lib changes
 
-I modify the HasManyAddAssociationMixinOptions definition to avoid compilation error 
+Please modify the HasManyAddAssociationMixinOptions interface definition to avoid compilation error 
 
 > File location: node_modules/sequelize/types/lib/associations/has-many.d.ts
 
