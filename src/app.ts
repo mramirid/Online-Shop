@@ -10,6 +10,8 @@ import * as errorController from './controllers/error'
 import sequelize from './utils/database'
 import Product from './models/Product'
 import User from './models/User'
+import Cart from './models/Cart'
+import CartItem from './models/CartItem'
 
 const app = express()
 
@@ -34,11 +36,12 @@ app.use(shopRoutes)
 app.use(errorController.get404)
 
 // User -> Products
-User.hasMany(Product, {
-  sourceKey: 'id',
-  foreignKey: 'userId',
-  onDelete: 'CASCADE'
-})
+User.hasMany(Product, { onDelete: 'CASCADE' })
+// User -> Cart
+User.hasOne(Cart)
+// Carts <-> Products
+Cart.belongsToMany(Product, { through: CartItem })
+Product.belongsToMany(Cart, { through: CartItem })
 
 // Setup dummy user (temp)
 sequelize.sync()
@@ -47,12 +50,13 @@ sequelize.sync()
   })
   .then(dummyUser => {
     if (!dummyUser) {
-      return User.create({ name: 'Amir', email: 'amir@test.com' })
+      User.create({ name: 'Amir', email: 'amir@test.com' })
     }
-    return dummyUser
   })
-  .then(dummyUser => {
-    console.log(dummyUser)
+  // .then(dummyUser => {
+  //   return dummyUser.createCart()
+  // })
+  .then(_ => {
     app.listen(3000)
   })
   .catch(err => {

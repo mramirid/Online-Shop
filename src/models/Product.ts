@@ -19,15 +19,17 @@ interface ProductAttributes {
 interface ProductCreationAttributes extends Optional<ProductAttributes, 'id'> { }
 
 class Product extends Model<ProductAttributes, ProductCreationAttributes>
-  implements ProductAttributes {
+  implements ProductAttributes {  
   id!: number
   title!: string
   price!: number
   imageUrl!: string
   description!: string
 
-  readonly createdAt!: Date | null
-  readonly updatedAt!: Date | null
+  readonly createdAt!: Date
+  readonly updatedAt!: Date
+
+  [x: string]: any
 }
 
 Product.init(

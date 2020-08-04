@@ -3,11 +3,14 @@ import {
   Model,
   DataTypes,
   HasManyCreateAssociationMixin,
-  HasManyGetAssociationsMixin
+  HasManyGetAssociationsMixin,
+  HasOneGetAssociationMixin,
+  HasOneCreateAssociationMixin
 } from 'sequelize'
 
 import sequelize from '../utils/database'
 import Product from './Product'
+import Cart from './Cart'
 
 interface UserAttributes {
   id: number
@@ -23,11 +26,13 @@ class User extends Model<UserAttributes, UserCreationAttributes>
   name!: string
   email!: string
 
-  readonly createdAt!: Date | null
-  readonly updatedAt!: Date | null
+  readonly createdAt!: Date
+  readonly updatedAt!: Date
 
   getProducts!: HasManyGetAssociationsMixin<Product>
   createProduct!: HasManyCreateAssociationMixin<Product>
+  getCart!: HasOneGetAssociationMixin<Cart>
+  createCart!: HasOneCreateAssociationMixin<Cart>
 }
 
 User.init(

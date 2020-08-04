@@ -43,41 +43,56 @@ export const getIndex: RequestHandler = async (_, res) => {
   }
 }
 
-export const getCart: RequestHandler = (_, res) => {
-  Cart.getCart(cart => {
-    Product.fetchAll(products => {
-      const cartProducts = []
+export const getCart: RequestHandler = async (req, res) => {
+  try {
+    const cart = await req.user!.getCart()
+    const products = await cart.getProducts()
 
-      for (const product of products) {
-        const cartProductData = cart?.products.find(cartProduct => cartProduct.id === product.id)
-        if (cartProductData) {
-          cartProducts.push({ product, qty: cartProductData.qty })
-        }
-      }
-
-      res.render('shop/cart', {
-        pageTitle: 'Your Cart',
-        path: '/cart',
-        cartProducts
-      })
+    res.render('shop/cart', {
+      pageTitle: 'Your Cart',
+      path: '/cart',
+      products
     })
-  })
+  } catch (error) {
+    console.log(error)
+  }
 }
 
-export const postCart: RequestHandler = (req, res) => {
-  const productId = req.body.productId
-  Product.findById(productId, (product => {
-    Cart.addProduct(productId, product.price)
+export const postCart: RequestHandler = async (req, res) => {
+  try {
+    const productId = req.body.productId
+    const cart = await req.user!.getCart()
+    let [product] = await cart.getProducts({ where: { id: productId }, limit: 1 })
+    let newQuantity = 1
+
+    if (product) {
+      const oldQuantity = product.CartItem.quantity
+      newQuantity = oldQuantity + 1
+      await cart.addProduct(product, { through: { quantity: newQuantity } })
+    } else {
+      product = await Product.findByPk(productId) as Product
+      await cart.addProduct(product, { through: { quantity: newQuantity } })
+    }
+
     res.redirect('/cart')
-  }))
+
+  } catch (error) {
+    console.log(error)
+  }
 }
 
-export const postCartDeleteProduct: RequestHandler = (req, res) => {
-  const productId = req.body.productId
-  Product.findById(productId, product => {
-    Cart.deleteProduct(productId, product.price)
+export const postCartDeleteProduct: RequestHandler = async (req, res) => {
+  try {
+    const productId = req.body.productId
+    const cart = await req.user!.getCart()
+    const [product] = await cart.getProducts({ where: { id: productId }, limit: 1 })
+
+    await product.CartItem.destroy()
     res.redirect('/cart')
-  })
+
+  } catch (error) {
+    console.log(error)
+  }
 }
 
 export const getOrders: RequestHandler = (_, res) => {
