@@ -1,5 +1,4 @@
 import {
-  Optional,
   Model,
   DataTypes,
   HasManyCreateAssociationMixin,
@@ -12,16 +11,7 @@ import sequelize from '../utils/database'
 import Product from './Product'
 import Cart from './Cart'
 
-interface UserAttributes {
-  id: number
-  name: string
-  email: string
-}
-
-interface UserCreationAttributes extends Optional<UserAttributes, 'id'> { }
-
-class User extends Model<UserAttributes, UserCreationAttributes>
-  implements UserAttributes {
+class User extends Model {
   id!: number
   name!: string
   email!: string

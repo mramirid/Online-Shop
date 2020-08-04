@@ -1,24 +1,18 @@
 import {
   Model,
-  DataTypes,
-  HasManyGetAssociationsMixin,
-  HasManyAddAssociationMixin
+  DataTypes
 } from 'sequelize'
 
 import sequelize from '../utils/database'
-import Product from './Product'
 
-class Cart extends Model {
+class Order extends Model {
   id!: number
 
   readonly createdAt!: Date
   readonly updatedAt!: Date
-
-  getProducts!: HasManyGetAssociationsMixin<Product>
-  addProduct!: HasManyAddAssociationMixin<Product, number>
 }
 
-Cart.init(
+Order.init(
   {
     id: {
       type: DataTypes.INTEGER,
@@ -28,9 +22,9 @@ Cart.init(
     }
   },
   {
-    tableName: 'carts',
+    tableName: 'orders',
     sequelize
   }
 )
 
-export default Cart
+export default Order

@@ -5,12 +5,7 @@ import {
 
 import sequelize from '../utils/database'
 
-interface CartItemAttributes {
-  id: number
-  quantity: number
-}
-
-class CartItem extends Model implements CartItemAttributes {
+class CartItem extends Model {
   id!: number
   quantity!: number
 
@@ -29,7 +24,7 @@ CartItem.init(
     quantity: DataTypes.INTEGER
   },
   {
-    tableName: 'cartItems',
+    tableName: 'cartitems',
     sequelize
   }
 )

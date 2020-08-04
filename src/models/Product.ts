@@ -1,25 +1,11 @@
 import {
-  Optional,
   Model,
   DataTypes
 } from 'sequelize'
 
 import sequelize from '../utils/database'
 
-// For stricter typechecking
-interface ProductAttributes {
-  id: number
-  title: string
-  price: number
-  imageUrl: string
-  description: string
-}
-
-// Some fields are optional when calling UserModel.create() or UserModel.build()
-interface ProductCreationAttributes extends Optional<ProductAttributes, 'id'> { }
-
-class Product extends Model<ProductAttributes, ProductCreationAttributes>
-  implements ProductAttributes {  
+class Product extends Model {  
   id!: number
   title!: string
   price!: number

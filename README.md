@@ -2,9 +2,11 @@
 
 On progress
 
-# Lib changes
+## Lib changes
 
-I modify the HasManyAddAssociationMixinOptions definition to avoid compilation error (node_modules/sequelize/types/lib/associations/has-many.d.ts)
+I modify the HasManyAddAssociationMixinOptions definition to avoid compilation error 
+
+> File location: node_modules/sequelize/types/lib/associations/has-many.d.ts
 
 ```typescript
   /**

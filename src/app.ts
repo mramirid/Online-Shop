@@ -12,6 +12,8 @@ import Product from './models/Product'
 import User from './models/User'
 import Cart from './models/Cart'
 import CartItem from './models/CartItem'
+import Order from './models/Order'
+import OrderItem from './models/OrderItem'
 
 const app = express()
 
@@ -41,9 +43,11 @@ User.hasMany(Product, { onDelete: 'CASCADE' })
 User.hasOne(Cart)
 // Carts <-> Products
 Cart.belongsToMany(Product, { through: CartItem })
-Product.belongsToMany(Cart, { through: CartItem })
+// User -> Orders
+User.hasMany(Order)
+// Orders <-> Products
+Order.belongsToMany(Product, { through: OrderItem })
 
-// Setup dummy user (temp)
 sequelize.sync()
   .then(_ => {
     return User.findByPk(1)
