@@ -25,6 +25,7 @@ app.use(async (req: Request, _: Response, next: NextFunction) => {
   // } catch (error) {
   //   console.log(error)
   // }
+  next()
 })
 
 app.use('/admin', adminRoutes)

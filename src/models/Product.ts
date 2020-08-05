@@ -8,47 +8,12 @@ export default class Product {
     public description: string
   ) { }
 
-  save() {
-
+  async save() {
+    try {
+      const db = getDb()
+      return await db.collection('products').insertOne(this)
+    } catch (error) {
+      throw error
+    }
   }
 }
-
-// class Product extends Model {
-  
-
-//   readonly createdAt!: Date
-//   readonly updatedAt!: Date
-
-//   [x: string]: any
-// }
-
-// Product.init(
-//   {
-//     id: {
-//       type: DataTypes.INTEGER,
-//       autoIncrement: true,
-//       allowNull: false,
-//       primaryKey: true
-//     },
-//     title: {
-//       type: DataTypes.STRING,
-//       allowNull: false
-//     },
-//     price: {
-//       type: DataTypes.DOUBLE,
-//       allowNull: false
-//     },
-//     imageUrl: {
-//       type: DataTypes.STRING,
-//       allowNull: false
-//     },
-//     description: {
-//       type: DataTypes.STRING,
-//       allowNull: false
-//     }
-//   },
-//   {
-//     tableName: 'products',
-//     sequelize
-//   }
-// )
