@@ -29,7 +29,9 @@ export const postAddProduct: RequestHandler = async (req, res) => {
       req.body.title,
       +req.body.price,
       req.body.imageUrl,
-      req.body.description
+      req.body.description,
+      undefined,
+      req.user!._id
     )
 
     await product.save()

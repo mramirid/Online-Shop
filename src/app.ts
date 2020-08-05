@@ -8,6 +8,7 @@ import adminRoutes from './routes/admin'
 import shopRoutes from './routes/shop'
 import * as errorController from './controllers/error'
 import { mongoConnect } from './utils/database'
+import User from './models/User'
 
 const app = express()
 
@@ -17,15 +18,23 @@ app.set('views', 'dist/views')
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(express.static(path.join(activeDir, 'public')))
 
+// Customize the express Request interface
+declare global {
+  namespace Express {
+    export interface Request {
+      user: User | null
+    }
+  }
+}
+
 app.use(async (req: Request, _: Response, next: NextFunction) => {
-  // try {
-  //   const user = await User.findByPk(1)
-  //   req.user = user
-  //   next()
-  // } catch (error) {
-  //   console.log(error)
-  // }
-  next()
+  try {
+    const user = await User.findById('5f2ab58bfbe166ef8c39e2c2')
+    req.user = user
+    next()
+  } catch (error) {
+    console.log(error)
+  }
 })
 
 app.use('/admin', adminRoutes)

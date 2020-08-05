@@ -1,60 +1,23 @@
-import {
-  Model,
-  DataTypes,
-  HasManyCreateAssociationMixin,
-  HasManyGetAssociationsMixin,
-  HasOneGetAssociationMixin,
-  HasOneCreateAssociationMixin
-} from 'sequelize'
+import { getDb } from '../utils/database'
+import { ObjectId } from 'mongodb'
 
-import sequelize from '../utils/database'
-import Product from './Product'
-import Cart from './Cart'
-import Order from './Order'
+export default class User {
+  public _id?: string
 
-class User extends Model {
-  id!: number
-  name!: string
-  email!: string
+  constructor(
+    public name: string,
+    public email: string
+  ) { }
 
-  readonly createdAt!: Date
-  readonly updatedAt!: Date
-
-  createProduct!: HasManyCreateAssociationMixin<Product>
-  getProducts!: HasManyGetAssociationsMixin<Product>
-  createCart!: HasOneCreateAssociationMixin<Cart>
-  getCart!: HasOneGetAssociationMixin<Cart>
-  createOrder!: HasManyCreateAssociationMixin<Order>
-  getOrders!: HasManyGetAssociationsMixin<Order>
-}
-
-User.init(
-  {
-    id: {
-      type: DataTypes.INTEGER,
-      autoIncrement: true,
-      allowNull: false,
-      primaryKey: true
-    },
-    name: {
-      type: DataTypes.STRING,
-      allowNull: false
-    },
-    email: DataTypes.STRING
-  },
-  {
-    tableName: 'users',
-    sequelize
+  save() {
+    return getDb().collection('users').insertOne(this)
   }
-)
 
-// Customize the express Request interface
-declare global {
-  namespace Express {
-    export interface Request {
-      user: User | null
+  static findById(userId: string): Promise<User | null> {
+    try {
+      return getDb().collection('users').findOne({ _id: new ObjectId(userId) })
+    } catch (error) {
+      throw error
     }
   }
 }
-
-export default User
