@@ -1,3 +1,5 @@
+import { ObjectId } from 'mongodb'
+
 import { getDb } from '../utils/database'
 
 export default class Product {
@@ -8,10 +10,25 @@ export default class Product {
     public description: string
   ) { }
 
-  async save() {
+  save() {
     try {
-      const db = getDb()
-      return await db.collection('products').insertOne(this)
+      return getDb().collection('products').insertOne(this)
+    } catch (error) {
+      throw error
+    }
+  }
+
+  static fetchAll() {
+    try {
+      return getDb().collection('products').find().toArray()
+    } catch (error) {
+      throw error
+    }
+  }
+
+  static findById(productId: string) {
+    try {
+      return getDb().collection('products').findOne({ _id: new ObjectId(productId) })
     } catch (error) {
       throw error
     }

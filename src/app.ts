@@ -5,7 +5,7 @@ import bodyParser from 'body-parser'
 
 import activeDir from './utils/path'
 import adminRoutes from './routes/admin'
-// import shopRoutes from './routes/shop'
+import shopRoutes from './routes/shop'
 import * as errorController from './controllers/error'
 import { mongoConnect } from './utils/database'
 
@@ -29,7 +29,7 @@ app.use(async (req: Request, _: Response, next: NextFunction) => {
 })
 
 app.use('/admin', adminRoutes)
-// app.use(shopRoutes)
+app.use(shopRoutes)
 app.use(errorController.get404)
 
 mongoConnect()
