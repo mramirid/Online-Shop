@@ -1,52 +1,54 @@
-import {
-  Model,
-  DataTypes
-} from 'sequelize'
+import { getDb } from '../utils/database'
 
-import sequelize from '../utils/database'
+export default class Product {
+  constructor(
+    public title: string,
+    public price: number,
+    public imageUrl: string,
+    public description: string
+  ) { }
 
-class Product extends Model {  
-  id!: number
-  title!: string
-  price!: number
-  imageUrl!: string
-  description!: string
+  save() {
 
-  readonly createdAt!: Date
-  readonly updatedAt!: Date
-
-  [x: string]: any
+  }
 }
 
-Product.init(
-  {
-    id: {
-      type: DataTypes.INTEGER,
-      autoIncrement: true,
-      allowNull: false,
-      primaryKey: true
-    },
-    title: {
-      type: DataTypes.STRING,
-      allowNull: false
-    },
-    price: {
-      type: DataTypes.DOUBLE,
-      allowNull: false
-    },
-    imageUrl: {
-      type: DataTypes.STRING,
-      allowNull: false
-    },
-    description: {
-      type: DataTypes.STRING,
-      allowNull: false
-    }
-  },
-  {
-    tableName: 'products',
-    sequelize
-  }
-)
+// class Product extends Model {
+  
 
-export default Product
+//   readonly createdAt!: Date
+//   readonly updatedAt!: Date
+
+//   [x: string]: any
+// }
+
+// Product.init(
+//   {
+//     id: {
+//       type: DataTypes.INTEGER,
+//       autoIncrement: true,
+//       allowNull: false,
+//       primaryKey: true
+//     },
+//     title: {
+//       type: DataTypes.STRING,
+//       allowNull: false
+//     },
+//     price: {
+//       type: DataTypes.DOUBLE,
+//       allowNull: false
+//     },
+//     imageUrl: {
+//       type: DataTypes.STRING,
+//       allowNull: false
+//     },
+//     description: {
+//       type: DataTypes.STRING,
+//       allowNull: false
+//     }
+//   },
+//   {
+//     tableName: 'products',
+//     sequelize
+//   }
+// )

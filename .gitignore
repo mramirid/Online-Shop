@@ -4,3 +4,4 @@ dist/**/**.js.map
 
 package-lock.json
 message.txt
+.env
