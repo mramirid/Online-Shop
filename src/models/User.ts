@@ -2,8 +2,9 @@ import { getDb } from '../utils/database'
 import { ObjectId } from 'mongodb'
 
 import Product from './Product'
+import Order from './Order'
 
-interface Cart {
+interface UserCart {
   items: {
     productId: ObjectId
     quantity: number
@@ -14,7 +15,7 @@ export default class User {
   constructor(
     public name: string,
     public email: string,
-    public cart: Cart,
+    public cart: UserCart,
     public _id: ObjectId
   ) { }
 
@@ -65,6 +66,28 @@ export default class User {
       { _id: this._id },
       { $set: { cart: { items: this.cart.items } } }
     )
+  }
+
+  async addOrder() {
+    const cartProducts = await this.getCart()
+    const order: Order = {
+      items: cartProducts,
+      user: {
+        _id: this._id,
+        name: this.name
+      }
+    }
+    await getDb().collection('orders').insertOne(order)
+
+    this.cart = { items: [] }
+    getDb().collection('users').updateOne(
+      { _id: this._id },
+      { $set: { cart: { items: [] } } }
+    )
+  }
+
+  getOrders(): Promise<Order[]> {
+    return getDb().collection('orders').find({'user._id': this._id}).toArray()
   }
 
   static findById(userId: string): Promise<User | null> {

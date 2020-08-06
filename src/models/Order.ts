@@ -1,34 +1,18 @@
-import {
-  Model,
-  DataTypes,
-  HasManyAddAssociationMixin
-} from 'sequelize'
+import { ObjectId } from "mongodb";
 
-import sequelize from '../utils/database'
-import Product from './Product'
+export default interface Order {
+  items: {
+    quantity: number,
+    title: string,
+    price: number,
+    imageUrl: string,
+    description: string,
+    _id?: ObjectId,
+    userId?: ObjectId
+  }[]
 
-class Order extends Model {
-  id!: number
-
-  readonly createdAt!: Date
-  readonly updatedAt!: Date
-
-  addProducts!: HasManyAddAssociationMixin<Product[], number>
-}
-
-Order.init(
-  {
-    id: {
-      type: DataTypes.INTEGER,
-      autoIncrement: true,
-      allowNull: false,
-      primaryKey: true
-    }
-  },
-  {
-    tableName: 'orders',
-    sequelize
+  user: {
+    _id: ObjectId,
+    name: string
   }
-)
-
-export default Order
+}
