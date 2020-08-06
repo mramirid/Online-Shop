@@ -1,6 +1,23 @@
 import mongoose, { Schema } from 'mongoose'
 
-const userSchema = new Schema({
+import { IProduct } from './Product'
+
+export interface IUser extends mongoose.Document {
+  name: string
+  email: string
+  cart: {
+    items: [
+      {
+        productId: Schema.Types.ObjectId,
+        quantity: number
+      }
+    ]
+  }
+
+  addToCart(product: IProduct): void
+}
+
+const userSchema = new Schema<IUser>({
   name: {
     type: String,
     required: true
@@ -26,15 +43,18 @@ const userSchema = new Schema({
   }
 })
 
-export interface IUser extends mongoose.Document {
-  name: string
-  email: string
-  cart: {
-    items: {
-      productId: Schema.Types.ObjectId,
-      quantity: number
-    }
+userSchema.methods.addToCart = function (product: IProduct) {
+  const cartProductIndex = this.cart.items.findIndex(cartProduct => {
+    return cartProduct.productId.toString() === product._id.toString()
+  })
+
+  if (cartProductIndex >= 0) {
+    this.cart.items[cartProductIndex].quantity += 1
+  } else {
+    this.cart.items.push({ productId: product._id, quantity: 1 })
   }
+
+  return this.save()
 }
 
 export default mongoose.model<IUser>('User', userSchema)

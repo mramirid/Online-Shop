@@ -5,11 +5,6 @@ import Product from '../models/Product'
 export const getProducts: RequestHandler = async (_, res) => {
   try {
     const products = await Product.find()
-      .select('title price -_id')
-      .populate('userId', 'name')
-
-    console.log(products)
-
     res.render('admin/product-list', {
       pageTitle: 'Admin Products',
       path: '/admin/products',

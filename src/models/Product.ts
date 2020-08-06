@@ -1,6 +1,14 @@
 import mongoose, { Schema } from 'mongoose'
 
-const productSchema = new mongoose.Schema({
+export interface IProduct extends mongoose.Document {
+  title: string
+  price: number
+  description: string
+  imageUrl: string
+  userId: Schema.Types.ObjectId
+}
+
+const productSchema = new mongoose.Schema<IProduct>({
   title: {
     type: String,
     required: true
@@ -23,14 +31,6 @@ const productSchema = new mongoose.Schema({
     required: true
   }
 })
-
-interface IProduct extends mongoose.Document {
-  title: string
-  price: number
-  description: string
-  imageUrl: string
-  userId: Schema.Types.ObjectId
-}
 
 export default mongoose.model<IProduct>('Product', productSchema)
 

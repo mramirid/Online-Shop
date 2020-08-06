@@ -58,8 +58,8 @@ export const getCart: RequestHandler = async (req, res) => {
 export const postCart: RequestHandler = async (req, res) => {
   try {
     const productId = req.body.productId
-    const product = await Product.findById(productId) as Product
-    await req.user!.addToCart(product)
+    const product = await Product.findById(productId)
+    req.user.addToCart(product!)
     res.redirect('/cart')
   } catch (error) {
     console.log(error)
