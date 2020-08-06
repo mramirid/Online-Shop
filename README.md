@@ -23,3 +23,15 @@ $ tsc --watch
 ```bash 
 $ npm start
 ```
+
+## Tags in commit history
+
+- Module 9 - Dynamic routes & advanced models
+
+- Module 10 - NodeJS & MySQL (using mysql2)
+
+- Module 11 - NodeJS & MySQL (using sequelize)
+
+- Module 12 - NodeJS & MongoDB (using MongoDB driver)
+
+- Module 13 - NodeJS & MongoDB (using mongoose)

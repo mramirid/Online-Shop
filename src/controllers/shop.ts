@@ -2,9 +2,22 @@ import { RequestHandler } from 'express'
 
 import Product from '../models/Product'
 
+export const getIndex: RequestHandler = async (_, res) => {
+  try {
+    const products = await Product.find()
+    res.render('shop/index', {
+      pageTitle: 'Shop',
+      path: '/',
+      products
+    })
+  } catch (error) {
+    console.log(error)
+  }
+}
+
 export const getProducts: RequestHandler = async (_, res) => {
   try {
-    const products = await Product.fetchAll()
+    const products = await Product.find()
     res.render('shop/product-list', {
       pageTitle: 'All Products',
       path: '/products',
@@ -23,19 +36,6 @@ export const getProduct: RequestHandler = async (req, res) => {
       pageTitle: product!.title,
       path: '/products',
       product
-    })
-  } catch (error) {
-    console.log(error)
-  }
-}
-
-export const getIndex: RequestHandler = async (_, res) => {
-  try {
-    const products = await Product.fetchAll()
-    res.render('shop/index', {
-      pageTitle: 'Shop',
-      path: '/',
-      products
     })
   } catch (error) {
     console.log(error)

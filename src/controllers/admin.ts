@@ -1,11 +1,10 @@
 import { RequestHandler } from 'express'
-import { ObjectId } from 'mongodb'
 
 import Product from '../models/Product'
 
 export const getProducts: RequestHandler = async (_, res) => {
   try {
-    const products = await Product.fetchAll()
+    const products = await Product.find()
     res.render('admin/product-list', {
       pageTitle: 'Admin Products',
       path: '/admin/products',
@@ -26,14 +25,12 @@ export const getAddProduct: RequestHandler = (_, res) => {
 
 export const postAddProduct: RequestHandler = async (req, res) => {
   try {
-    const product = new Product(
-      req.body.title,
-      +req.body.price,
-      req.body.imageUrl,
-      req.body.description,
-      undefined,
-      req.user!._id
-    )
+    const product = new Product({
+      title: req.body.title,
+      price: +req.body.price,
+      imageUrl: req.body.imageUrl,
+      description: req.body.description
+    })
 
     await product.save()
     console.log('Product created successfully')
