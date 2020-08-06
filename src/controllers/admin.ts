@@ -83,10 +83,12 @@ export const postEditProduct: RequestHandler = async (req, res) => {
   }
 }
 
-export const postDeleteProduct: RequestHandler = (req, res) => {
-  Product.findByIdAndRemove(req.body.productId, (err) => {
-    if (err) console.log(err)
+export const postDeleteProduct: RequestHandler = async (req, res) => {
+  try {
+    await Product.findByIdAndRemove(req.body.productId)
     console.log('Product deleted successfully')
     res.redirect('/admin/products')
-  })
+  } catch (error) {
+    console.log(error)
+  }
 }

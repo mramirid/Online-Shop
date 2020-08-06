@@ -44,7 +44,8 @@ export const getProduct: RequestHandler = async (req, res) => {
 
 export const getCart: RequestHandler = async (req, res) => {
   try {
-    const cartProducts = await req.user!.getCart()
+    const user = await req.user.populate('cart.items.productId').execPopulate()
+    const cartProducts = user.cart.items
     res.render('shop/cart', {
       pageTitle: 'Your Cart',
       path: '/cart',
@@ -59,7 +60,7 @@ export const postCart: RequestHandler = async (req, res) => {
   try {
     const productId = req.body.productId
     const product = await Product.findById(productId)
-    req.user.addToCart(product!)
+    await req.user.addToCart(product!)
     res.redirect('/cart')
   } catch (error) {
     console.log(error)
@@ -69,7 +70,7 @@ export const postCart: RequestHandler = async (req, res) => {
 export const postCartDeleteProduct: RequestHandler = async (req, res) => {
   try {
     const productId = req.body.productId
-    await req.user!.deleteItemFromCart(productId)
+    await req.user.removeFromCart(productId)
     res.redirect('/cart')
   } catch (error) {
     console.log(error)
@@ -78,7 +79,7 @@ export const postCartDeleteProduct: RequestHandler = async (req, res) => {
 
 export const postOrder: RequestHandler = async (req, res) => {
   try {
-    await req.user!.addOrder()
+    await req.user.addOrder()
     res.redirect('/orders')
   } catch (error) {
     console.log(error)

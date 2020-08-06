@@ -1,20 +1,19 @@
-import mongoose, { Schema } from 'mongoose'
+import mongoose, { Schema, Document } from 'mongoose'
 
 import { IProduct } from './Product'
 
-export interface IUser extends mongoose.Document {
+export interface IUser extends Document {
   name: string
   email: string
   cart: {
-    items: [
-      {
-        productId: Schema.Types.ObjectId,
-        quantity: number
-      }
-    ]
+    items: {
+      productId: Schema.Types.ObjectId,
+      quantity: number
+    }[]
   }
 
-  addToCart(product: IProduct): void
+  addToCart(product: IProduct): Promise<IUser>
+  removeFromCart(productId: string): Promise<IUser>
 }
 
 const userSchema = new Schema<IUser>({
@@ -54,6 +53,13 @@ userSchema.methods.addToCart = function (product: IProduct) {
     this.cart.items.push({ productId: product._id, quantity: 1 })
   }
 
+  return this.save()
+}
+
+userSchema.methods.removeFromCart = function (productId: string) {
+  this.cart.items = this.cart.items.filter(cartProduct => {
+    return cartProduct.productId.toString() !== productId
+  })
   return this.save()
 }
 
