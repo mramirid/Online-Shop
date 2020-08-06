@@ -1,4 +1,4 @@
-import mongoose from 'mongoose'
+import mongoose, { Schema } from 'mongoose'
 
 const productSchema = new mongoose.Schema({
   title: {
@@ -16,6 +16,11 @@ const productSchema = new mongoose.Schema({
   imageUrl: {
     type: String,
     required: true
+  },
+  userId: {
+    type: Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
   }
 })
 
@@ -24,6 +29,7 @@ interface IProduct extends mongoose.Document {
   price: number
   description: string
   imageUrl: string
+  userId: Schema.Types.ObjectId
 }
 
 export default mongoose.model<IProduct>('Product', productSchema)

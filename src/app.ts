@@ -31,7 +31,7 @@ declare global {
 app.use(async (req: Request, _: Response, next: NextFunction) => {
   try {
     if (!req.user) {
-      req.user = await User.findById('5f2bda5c1ad0581408dc1412') as IUser
+      req.user = await User.findById('5f2bdf6027d8105fb885b695') as IUser
     }
     next()
   } catch (error) {
@@ -65,8 +65,8 @@ mongoose.connect(url, {
         }
       })
       await user.save()
-      app.listen(3000)
     }
+    app.listen(3000)
   })
   .catch(error => {
     console.log(error)
