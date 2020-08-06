@@ -3,20 +3,14 @@ import { ObjectId } from 'mongodb'
 import { getDb } from '../utils/database'
 
 export default class Product {
-  public _id?: ObjectId
-  public userId?: ObjectId
-
   constructor(
     public title: string,
     public price: number,
     public imageUrl: string,
     public description: string,
-    id?: string,
-    userId?: string
-  ) {
-    this._id = id ? new ObjectId(id) : undefined
-    this.userId = userId ? new ObjectId(userId) : undefined
-  }
+    public _id?: ObjectId,
+    public userId?: ObjectId
+  ) { }
 
   save() {
     try {

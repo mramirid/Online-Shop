@@ -1,4 +1,5 @@
 import { RequestHandler } from 'express'
+import { ObjectId } from 'mongodb'
 
 import Product from '../models/Product'
 
@@ -70,7 +71,7 @@ export const postEditProduct: RequestHandler = async (req, res) => {
       req.body.price,
       req.body.imageUrl,
       req.body.description,
-      req.body.productId
+      new ObjectId(req.body.productId)
     )
     await product.save()
     console.log('Product updated successfully')

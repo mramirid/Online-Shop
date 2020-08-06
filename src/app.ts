@@ -29,8 +29,10 @@ declare global {
 
 app.use(async (req: Request, _: Response, next: NextFunction) => {
   try {
-    const user = await User.findById('5f2ab58bfbe166ef8c39e2c2')
-    req.user = user
+    if (!req.user) {
+      const user = await User.findById('5f2ab58bfbe166ef8c39e2c2') as User
+      req.user = new User(user.name, user.email, user.cart, user._id)
+    }
     next()
   } catch (error) {
     console.log(error)

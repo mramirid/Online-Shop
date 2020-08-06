@@ -44,13 +44,11 @@ export const getIndex: RequestHandler = async (_, res) => {
 
 export const getCart: RequestHandler = async (req, res) => {
   try {
-    const cart = await req.user!.getCart()
-    const products = await cart.getProducts()
-
+    const cartProducts = await req.user!.getCart()
     res.render('shop/cart', {
       pageTitle: 'Your Cart',
       path: '/cart',
-      products
+      products: cartProducts
     })
   } catch (error) {
     console.log(error)
@@ -60,21 +58,9 @@ export const getCart: RequestHandler = async (req, res) => {
 export const postCart: RequestHandler = async (req, res) => {
   try {
     const productId = req.body.productId
-    const cart = await req.user!.getCart()
-    let [product] = await cart.getProducts({ where: { id: productId }, limit: 1 })
-    let newQuantity = 1
-
-    if (product) {
-      const oldQuantity = product.CartItem.quantity
-      newQuantity = oldQuantity + 1
-      await cart.addProduct(product, { through: { quantity: newQuantity } })
-    } else {
-      product = await Product.findByPk(productId) as Product
-      await cart.addProduct(product, { through: { quantity: newQuantity } })
-    }
-
+    const product = await Product.findById(productId) as Product
+    await req.user!.addToCart(product)
     res.redirect('/cart')
-
   } catch (error) {
     console.log(error)
   }
@@ -83,12 +69,8 @@ export const postCart: RequestHandler = async (req, res) => {
 export const postCartDeleteProduct: RequestHandler = async (req, res) => {
   try {
     const productId = req.body.productId
-    const cart = await req.user!.getCart()
-    const [product] = await cart.getProducts({ where: { id: productId }, limit: 1 })
-
-    await product.CartItem.destroy()
+    await req.user!.deleteItemFromCart(productId)
     res.redirect('/cart')
-
   } catch (error) {
     console.log(error)
   }
