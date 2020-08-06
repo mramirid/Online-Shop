@@ -1,3 +1,43 @@
+import mongoose, { Schema } from 'mongoose'
+
+const userSchema = new Schema({
+  name: {
+    type: String,
+    required: true
+  },
+  email: {
+    type: String,
+    required: true
+  },
+  cart: {
+    items: [
+      {
+        productId: {
+          type: Schema.Types.ObjectId,
+          required: true
+        },
+        quantity: {
+          type: Number,
+          required: true
+        }
+      }
+    ]
+  }
+})
+
+export interface IUser extends mongoose.Document {
+  name: string
+  email: string
+  cart: {
+    items: {
+      productId: Schema.Types.ObjectId,
+      quantity: number
+    }
+  }
+}
+
+export default mongoose.model<IUser>('User', userSchema)
+
 // import { getDb } from '../utils/database'
 // import { ObjectId } from 'mongodb'
 
