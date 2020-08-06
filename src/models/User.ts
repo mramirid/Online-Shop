@@ -1,19 +1,21 @@
 import mongoose, { Schema, Document } from 'mongoose'
 
 import { IProduct } from './Product'
+import CustomObjectId from '../utils/CustomObjectId'
 
 export interface IUser extends Document {
   name: string
   email: string
   cart: {
     items: {
-      productId: Schema.Types.ObjectId,
+      productId: CustomObjectId
       quantity: number
     }[]
   }
 
   addToCart(product: IProduct): Promise<IUser>
   removeFromCart(productId: string): Promise<IUser>
+  clearCart(): Promise<IUser>
 }
 
 const userSchema = new Schema<IUser>({
@@ -29,7 +31,7 @@ const userSchema = new Schema<IUser>({
     items: [
       {
         productId: {
-          type: Schema.Types.ObjectId,
+          type: CustomObjectId,
           ref: 'Product',
           required: true
         },
@@ -60,6 +62,11 @@ userSchema.methods.removeFromCart = function (productId: string) {
   this.cart.items = this.cart.items.filter(cartProduct => {
     return cartProduct.productId.toString() !== productId
   })
+  return this.save()
+}
+
+userSchema.methods.clearCart = function () {
+  this.cart = { items: [] }
   return this.save()
 }
 

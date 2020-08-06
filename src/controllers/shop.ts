@@ -1,6 +1,7 @@
 import { RequestHandler } from 'express'
 
 import Product from '../models/Product'
+import Order from '../models/Order'
 
 export const getIndex: RequestHandler = async (_, res) => {
   try {
@@ -44,8 +45,8 @@ export const getProduct: RequestHandler = async (req, res) => {
 
 export const getCart: RequestHandler = async (req, res) => {
   try {
-    const user = await req.user.populate('cart.items.productId').execPopulate()
-    const cartProducts = user.cart.items
+    const userAndCart = await req.user.populate('cart.items.productId').execPopulate()
+    const cartProducts = userAndCart.cart.items
     res.render('shop/cart', {
       pageTitle: 'Your Cart',
       path: '/cart',
@@ -79,8 +80,26 @@ export const postCartDeleteProduct: RequestHandler = async (req, res) => {
 
 export const postOrder: RequestHandler = async (req, res) => {
   try {
-    await req.user.addOrder()
+    const userAndCart = await req.user.populate('cart.items.productId').execPopulate()
+    const cartProducts = userAndCart.cart.items.map(cartProduct => {
+      return {
+        quantity: cartProduct.quantity,
+        product: { ...cartProduct.productId._doc }
+      }
+    })
+
+    const order = new Order({
+      user: {
+        name: req.user.name,
+        userId: req.user._id
+      },
+      products: cartProducts
+    })
+
+    await order.save()
+    await req.user.clearCart()
     res.redirect('/orders')
+
   } catch (error) {
     console.log(error)
   }
@@ -88,7 +107,7 @@ export const postOrder: RequestHandler = async (req, res) => {
 
 export const getOrders: RequestHandler = async (req, res) => {
   try {
-    const orders = await req.user!.getOrders()
+    const orders = await Order.find({'user.userId': req.user._id})
     res.render('shop/orders', {
       pageTitle: 'Your Orders',
       path: '/orders',
