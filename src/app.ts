@@ -2,12 +2,14 @@ import path from 'path'
 
 import express, { Request, Response, NextFunction } from 'express'
 import bodyParser from 'body-parser'
+import cookieParser from 'cookie-parser'
 import mongoose from 'mongoose'
 import dotenv from 'dotenv'
 
 import activeDir from './utils/path'
 import adminRoutes from './routes/admin'
 import shopRoutes from './routes/shop'
+import authRoutes from './routes/auth'
 import * as errorController from './controllers/error'
 import User, { IUser } from './models/User'
 
@@ -17,6 +19,7 @@ app.set('view engine', 'ejs')
 app.set('views', 'dist/views')
 
 app.use(bodyParser.urlencoded({ extended: false }))
+app.use(cookieParser())
 app.use(express.static(path.join(activeDir, 'public')))
 
 // Customize the express Request interface
@@ -30,9 +33,7 @@ declare global {
 
 app.use(async (req: Request, _: Response, next: NextFunction) => {
   try {
-    if (!req.user) {
-      req.user = await User.findById('5f2bdf6027d8105fb885b695') as IUser
-    }
+    req.user = await User.findById('5f2bdf6027d8105fb885b695') as IUser
     next()
   } catch (error) {
     console.log(error)
@@ -41,6 +42,7 @@ app.use(async (req: Request, _: Response, next: NextFunction) => {
 
 app.use('/admin', adminRoutes)
 app.use(shopRoutes)
+app.use(authRoutes)
 app.use(errorController.get404)
 
 dotenv.config()

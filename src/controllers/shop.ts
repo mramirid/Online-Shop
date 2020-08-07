@@ -3,12 +3,13 @@ import { RequestHandler } from 'express'
 import Product from '../models/Product'
 import Order from '../models/Order'
 
-export const getIndex: RequestHandler = async (_, res) => {
+export const getIndex: RequestHandler = async (req, res) => {
   try {
     const products = await Product.find()
     res.render('shop/index', {
       pageTitle: 'Shop',
       path: '/',
+      isAuthenticated: req.isAuthenticated,
       products
     })
   } catch (error) {
@@ -16,12 +17,13 @@ export const getIndex: RequestHandler = async (_, res) => {
   }
 }
 
-export const getProducts: RequestHandler = async (_, res) => {
+export const getProducts: RequestHandler = async (req, res) => {
   try {
     const products = await Product.find()
     res.render('shop/product-list', {
       pageTitle: 'All Products',
       path: '/products',
+      isAuthenticated: req.isAuthenticated,
       products
     })
   } catch (error) {
@@ -36,6 +38,7 @@ export const getProduct: RequestHandler = async (req, res) => {
     res.render('shop/product-detail', {
       pageTitle: product!.title,
       path: '/products',
+      isAuthenticated: req.isAuthenticated,
       product
     })
   } catch (error) {
@@ -50,6 +53,7 @@ export const getCart: RequestHandler = async (req, res) => {
     res.render('shop/cart', {
       pageTitle: 'Your Cart',
       path: '/cart',
+      isAuthenticated: req.isAuthenticated,
       products: cartProducts
     })
   } catch (error) {
@@ -111,6 +115,7 @@ export const getOrders: RequestHandler = async (req, res) => {
     res.render('shop/orders', {
       pageTitle: 'Your Orders',
       path: '/orders',
+      isAuthenticated: req.isAuthenticated,
       orders
     })
   } catch (error) {
@@ -118,9 +123,10 @@ export const getOrders: RequestHandler = async (req, res) => {
   }
 }
 
-export const getCheckout: RequestHandler = (_, res) => {
+export const getCheckout: RequestHandler = (req, res) => {
   res.render('shop/checkout', {
     pageTitle: 'Checkout',
-    path: '/checkout'
+    path: '/checkout',
+    isAuthenticated: req.isAuthenticated
   })
 }
