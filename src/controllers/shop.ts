@@ -38,7 +38,7 @@ export const getProduct: RequestHandler = async (req, res) => {
     res.render('shop/product-detail', {
       pageTitle: product!.title,
       path: '/products',
-      isAuthenticated: req.session?.isAuthenticated,
+      isAuthenticated: req.session!.isAuthenticated,
       product
     })
   } catch (error) {
@@ -48,12 +48,12 @@ export const getProduct: RequestHandler = async (req, res) => {
 
 export const getCart: RequestHandler = async (req, res) => {
   try {
-    const userAndCart = await req.session!.user.populate('cart.items.productId').execPopulate()
+    const userAndCart = await req.user.populate('cart.items.productId').execPopulate()
     const cartProducts = userAndCart.cart.items
     res.render('shop/cart', {
       pageTitle: 'Your Cart',
       path: '/cart',
-      isAuthenticated: req.session?.isAuthenticated,
+      isAuthenticated: req.session!.isAuthenticated,
       products: cartProducts
     })
   } catch (error) {
@@ -65,7 +65,7 @@ export const postCart: RequestHandler = async (req, res) => {
   try {
     const productId = req.body.productId
     const product = await Product.findById(productId)
-    await req.session?.user.addToCart(product!)
+    await req.user.addToCart(product!)
     res.redirect('/cart')
   } catch (error) {
     console.log(error)
@@ -75,7 +75,7 @@ export const postCart: RequestHandler = async (req, res) => {
 export const postCartDeleteProduct: RequestHandler = async (req, res) => {
   try {
     const productId = req.body.productId
-    await req.session!.user.removeFromCart(productId)
+    await req.user.removeFromCart(productId)
     res.redirect('/cart')
   } catch (error) {
     console.log(error)
@@ -84,7 +84,7 @@ export const postCartDeleteProduct: RequestHandler = async (req, res) => {
 
 export const postOrder: RequestHandler = async (req, res) => {
   try {
-    const userAndCart = await req.session!.user.populate('cart.items.productId').execPopulate()
+    const userAndCart = await req.user.populate('cart.items.productId').execPopulate()
     const cartProducts = userAndCart.cart.items.map(cartProduct => {
       return {
         quantity: cartProduct.quantity,
@@ -94,14 +94,14 @@ export const postOrder: RequestHandler = async (req, res) => {
 
     const order = new Order({
       user: {
-        name: req.session?.user.name,
-        userId: req.session?.user._id
+        name: req.user.name,
+        userId: req.user._id
       },
       products: cartProducts
     })
 
     await order.save()
-    await req.session?.user.clearCart()
+    await req.user.clearCart()
     res.redirect('/orders')
 
   } catch (error) {
@@ -111,7 +111,7 @@ export const postOrder: RequestHandler = async (req, res) => {
 
 export const getOrders: RequestHandler = async (req, res) => {
   try {
-    const orders = await Order.find({'user.userId': req.session?.user._id})
+    const orders = await Order.find({'user.userId': req.user._id})
     res.render('shop/orders', {
       pageTitle: 'Your Orders',
       path: '/orders',

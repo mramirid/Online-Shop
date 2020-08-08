@@ -48,8 +48,21 @@ declare global {
       user: IUser
       isAuthenticated: boolean
     }
+
+    export interface Request {
+      user: IUser
+    }
   }
 }
+
+app.use(async (req, _, next) => {
+  try {
+    req.user = await User.findById(req.session?.user._id) as IUser
+  } catch (error) {
+    console.log('req.user will be empty, because user is not authenticated')
+  }
+  next()
+})
 
 app.use('/admin', adminRoutes)
 app.use(shopRoutes)

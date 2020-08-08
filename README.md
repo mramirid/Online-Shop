@@ -35,3 +35,5 @@ $ npm start
 - Module 12 - NodeJS & MongoDB (using MongoDB driver)
 
 - Module 13 - NodeJS & MongoDB (using mongoose)
+
+- Module 14 - Sessions & Cookies
