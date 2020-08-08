@@ -1,10 +1,10 @@
 import path from 'path'
 
-import express, { Request, Response, NextFunction } from 'express'
+import express from 'express'
 import bodyParser from 'body-parser'
 import session from 'express-session'
 import connectMongoDBSession from 'connect-mongodb-session'
-import mongoose, { mongo } from 'mongoose'
+import mongoose from 'mongoose'
 import dotenv from 'dotenv'
 
 import activeDir from './utils/path'
@@ -41,23 +41,15 @@ app.use(session({
   store: mongoDBStore
 }))
 
-// Customize the express Request interface
+// Customize the express Session interface
 declare global {
   namespace Express {
-    export interface Request {
+    export interface Session {
       user: IUser
+      isAuthenticated: boolean
     }
   }
 }
-
-app.use(async (req: Request, _: Response, next: NextFunction) => {
-  try {
-    req.user = await User.findById('5f2bdf6027d8105fb885b695') as IUser
-    next()
-  } catch (error) {
-    console.log(error)
-  }
-})
 
 app.use('/admin', adminRoutes)
 app.use(shopRoutes)
