@@ -73,18 +73,7 @@ mongoose.connect(MONGODB_URL, {
   useNewUrlParser: true,
   useUnifiedTopology: true
 })
-  .then(async _ => {
-    const user = await User.findById('5f2bdf6027d8105fb885b695')
-    if (!user) {
-      const user = new User({
-        name: 'Amir',
-        email: 'amir@test.com',
-        cart: {
-          items: []
-        }
-      })
-      await user.save()
-    }
+  .then(_ => {
     app.listen(3000)
   })
   .catch(error => {
