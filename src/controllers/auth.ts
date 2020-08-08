@@ -3,16 +3,11 @@ import { RequestHandler } from "express"
 import User, { IUser } from '../models/User'
 
 export const getLogin: RequestHandler = (req, res) => {
-  try {
-    console.log()
-    res.render('auth/login', {
-      pageTitle: 'Login',
-      path: '/login',
-      isAuthenticated: req.session!.isAuthenticated
-    })
-  } catch (error) {
-    console.log(error)
-  }
+  res.render('auth/login', {
+    pageTitle: 'Login',
+    path: '/login',
+    isAuthenticated: req.session?.isAuthenticated
+  })
 }
 
 export const postLogin: RequestHandler = async (req, res) => {
@@ -23,4 +18,11 @@ export const postLogin: RequestHandler = async (req, res) => {
   } catch (error) {
     console.log(error)
   }
+}
+
+export const postLogout: RequestHandler = async (req, res) => {
+  req.session!.destroy(error => {
+    if (error) console.log(error)
+    res.redirect('/')
+  })
 }
