@@ -2,8 +2,9 @@ import path from 'path'
 
 import express, { Request, Response, NextFunction } from 'express'
 import bodyParser from 'body-parser'
-import cookieParser from 'cookie-parser'
-import mongoose from 'mongoose'
+import session from 'express-session'
+import connectMongoDBSession from 'connect-mongodb-session'
+import mongoose, { mongo } from 'mongoose'
 import dotenv from 'dotenv'
 
 import activeDir from './utils/path'
@@ -15,12 +16,30 @@ import User, { IUser } from './models/User'
 
 const app = express()
 
+dotenv.config()
+const cluster = process.env.CLUSTER_NAME
+const dbname = process.env.DB_NAME
+const username = process.env.DB_USERNAME
+const password = process.env.DB_PASSWORD
+const MONGODB_URL = `mongodb+srv://${username}:${password}@${cluster}.dxksd.mongodb.net/${dbname}?retryWrites=true&w=majority`
+
+const MongoDBStore = connectMongoDBSession(session)
+const mongoDBStore = new MongoDBStore({
+  uri: MONGODB_URL,
+  collection: 'sessions'
+})
+
 app.set('view engine', 'ejs')
 app.set('views', 'dist/views')
 
-app.use(bodyParser.urlencoded({ extended: false }))
-app.use(cookieParser())
 app.use(express.static(path.join(activeDir, 'public')))
+app.use(bodyParser.urlencoded({ extended: false }))
+app.use(session({
+  secret: 'my string',
+  resave: false,
+  saveUninitialized: false,
+  store: mongoDBStore
+}))
 
 // Customize the express Request interface
 declare global {
@@ -45,14 +64,7 @@ app.use(shopRoutes)
 app.use(authRoutes)
 app.use(errorController.get404)
 
-dotenv.config()
-const cluster = process.env.CLUSTER_NAME
-const dbname = process.env.DB_NAME
-const username = process.env.DB_USERNAME
-const password = process.env.DB_PASSWORD
-const url = `mongodb+srv://${username}:${password}@${cluster}.dxksd.mongodb.net/${dbname}?retryWrites=true&w=majority`
-
-mongoose.connect(url, {
+mongoose.connect(MONGODB_URL, {
   useNewUrlParser: true,
   useUnifiedTopology: true
 })

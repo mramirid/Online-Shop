@@ -1,7 +1,7 @@
 import { RequestHandler } from "express"
 
 export const getLogin: RequestHandler = (req, res) => {
-  console.log(req.cookies.isAuthenticated)
+  console.log(req.session!.isLoggedIn)
   res.render('auth/login', {
     pageTitle: 'Login',
     path: '/login',
@@ -10,6 +10,6 @@ export const getLogin: RequestHandler = (req, res) => {
 }
 
 export const postLogin: RequestHandler = (req, res) => {
-  res.setHeader('Set-Cookie', 'isAuthenticated=true')
+  req.session!.isLoggedIn = true
   res.redirect('/')
 }
