@@ -1,7 +1,7 @@
 import { RequestHandler } from "express"
-import bcrypt, { hash } from 'bcryptjs'
+import bcrypt from 'bcryptjs'
 
-import User, { IUser } from '../models/User'
+import User from '../models/User'
 
 export const getSignup: RequestHandler = (req, res) => {
   res.render('auth/signup', {
@@ -45,14 +45,24 @@ export const getLogin: RequestHandler = (req, res) => {
 
 export const postLogin: RequestHandler = async (req, res) => {
   try {
-    req.session!.user = await User.findById('5f2bdf6027d8105fb885b695') as IUser
-    req.session!.isAuthenticated = true
-    req.session!.save(error => {
-      if (error) throw 'Failed to create session in the database'
-      res.redirect('/')
-    })
+    const user = await User.findOne({ email: req.body.email })
+    if (!user) return res.redirect('/login')
+
+    const doMatch = await bcrypt.compare(req.body.password, user.password)
+
+    if (doMatch) {
+      req.session!.user = user
+      req.session!.isAuthenticated = true
+      req.session!.save(error => {
+        if (error) throw 'Failed to create session in the database'
+        res.redirect('/')
+      })
+    } else {
+      res.redirect('/login')
+    }
   } catch (error) {
     console.log(error)
+    res.redirect('/login')
   }
 }
 

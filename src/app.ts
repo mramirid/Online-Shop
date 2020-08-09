@@ -58,8 +58,8 @@ declare global {
 app.use(async (req, _, next) => {
   try {
     req.user = await User.findById(req.session?.user._id) as IUser
-  } catch (error) {
-    console.log('req.user will be empty, because user is not authenticated')
+  } catch (_) {
+    console.log(new Date().getMinutes(), 'req.user will be empty, because user is not authenticated')
   }
   next()
 })
