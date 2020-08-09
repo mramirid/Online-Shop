@@ -35,7 +35,7 @@ app.set('views', 'dist/views')
 app.use(express.static(path.join(activeDir, 'public')))
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(session({
-  secret: 'my string',
+  secret: 'OBE8kj$xMA?xO6b*v$&KfdQmwPz?ah',
   resave: false,
   saveUninitialized: false,
   store: mongoDBStore

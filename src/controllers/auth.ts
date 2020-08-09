@@ -49,17 +49,15 @@ export const postLogin: RequestHandler = async (req, res) => {
     if (!user) return res.redirect('/login')
 
     const doMatch = await bcrypt.compare(req.body.password, user.password)
+    if (!doMatch) return res.redirect('/login')
 
-    if (doMatch) {
-      req.session!.user = user
-      req.session!.isAuthenticated = true
-      req.session!.save(error => {
-        if (error) throw 'Failed to create session in the database'
-        res.redirect('/')
-      })
-    } else {
-      res.redirect('/login')
-    }
+    req.session!.user = user
+    req.session!.isAuthenticated = true
+    req.session!.save(error => {
+      if (error) throw 'Failed to create session in the database'
+      res.redirect('/')
+    })
+
   } catch (error) {
     console.log(error)
     res.redirect('/login')
