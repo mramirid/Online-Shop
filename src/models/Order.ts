@@ -8,7 +8,7 @@ export interface IOrder extends Document {
     quantity: number
   }[]
   user: {
-    name: string
+    email: string
     userId: Schema.Types.ObjectId
   }
 }
@@ -27,7 +27,7 @@ const orderSchema = new Schema<IOrder>({
     }
   ],
   user: {
-    name: {
+    email: {
       type: String,
       required: true
     },

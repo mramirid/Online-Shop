@@ -2,10 +2,11 @@ import path from 'path'
 
 import express from 'express'
 import bodyParser from 'body-parser'
+import dotenv from 'dotenv'
+import mongoose from 'mongoose'
 import session from 'express-session'
 import connectMongoDBSession from 'connect-mongodb-session'
-import mongoose from 'mongoose'
-import dotenv from 'dotenv'
+import csrf from 'csurf'
 
 import activeDir from './utils/path'
 import adminRoutes from './routes/admin'
@@ -40,6 +41,7 @@ app.use(session({
   saveUninitialized: false,
   store: mongoDBStore
 }))
+app.use(csrf())
 
 // Customize the express Session interface
 declare global {
@@ -61,6 +63,12 @@ app.use(async (req, _, next) => {
   } catch (_) {
     console.log(new Date().getMinutes(), 'req.user will be empty, because user is not authenticated')
   }
+  next()
+})
+
+app.use((req, res, next) => {
+  res.locals.isAuthenticated = req.session?.isAuthenticated
+  res.locals.csrfToken = req.csrfToken()
   next()
 })
 

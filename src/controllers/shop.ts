@@ -3,13 +3,12 @@ import { RequestHandler } from 'express'
 import Product from '../models/Product'
 import Order from '../models/Order'
 
-export const getIndex: RequestHandler = async (req, res) => {
+export const getIndex: RequestHandler = async (_, res) => {
   try {
     const products = await Product.find()
     res.render('shop/index', {
       pageTitle: 'Shop',
       path: '/',
-      isAuthenticated: req.session?.isAuthenticated,
       products
     })
   } catch (error) {
@@ -94,7 +93,7 @@ export const postOrder: RequestHandler = async (req, res) => {
 
     const order = new Order({
       user: {
-        name: req.user.name,
+        email: req.user.email,
         userId: req.user._id
       },
       products: cartProducts
@@ -111,7 +110,7 @@ export const postOrder: RequestHandler = async (req, res) => {
 
 export const getOrders: RequestHandler = async (req, res) => {
   try {
-    const orders = await Order.find({'user.userId': req.user._id})
+    const orders = await Order.find({ 'user.userId': req.user._id })
     res.render('shop/orders', {
       pageTitle: 'Your Orders',
       path: '/orders',
