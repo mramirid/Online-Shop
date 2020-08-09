@@ -6,6 +6,8 @@ On progress
 
 1. Create a Mongo Atlas cluster & connect this app to your cluster (fill the .env)
 
+2. You need to configure your own mailgun (fill the .env)
+
 2. Run npm install
 
 ```bash 
@@ -39,3 +41,5 @@ $ npm start
 - Module 14 - Sessions & Cookies
 
 - Module 15 - Authentication
+
+- Module 16 - Sending Emails
