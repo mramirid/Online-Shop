@@ -8,7 +8,6 @@ export const getProducts: RequestHandler = async (req, res) => {
     res.render('admin/product-list', {
       pageTitle: 'Admin Products',
       path: '/admin/products',
-      isAuthenticated: req.session?.isAuthenticated,
       products
     })
   } catch (error) {
@@ -20,7 +19,6 @@ export const getAddProduct: RequestHandler = (req, res) => {
   res.render('admin/edit-product', {
     pageTitle: 'Add Product',
     path: '/admin/add-product',
-    isAuthenticated: req.session?.isAuthenticated,
     isEdit: false
   })
 }
@@ -57,7 +55,6 @@ export const getEditProduct: RequestHandler = async (req, res) => {
     res.render('admin/edit-product', {
       pageTitle: 'Edit Product',
       path: '/admin/edit-product',
-      isAuthenticated: req.session?.isAuthenticated,
       isEdit: true,
       product
     })

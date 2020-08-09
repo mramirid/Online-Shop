@@ -7,6 +7,7 @@ import mongoose from 'mongoose'
 import session from 'express-session'
 import connectMongoDBSession from 'connect-mongodb-session'
 import csrf from 'csurf'
+import flash from 'connect-flash'
 
 import activeDir from './utils/path'
 import adminRoutes from './routes/admin'
@@ -42,6 +43,7 @@ app.use(session({
   store: mongoDBStore
 }))
 app.use(csrf())
+app.use(flash())
 
 // Customize the express Session interface
 declare global {

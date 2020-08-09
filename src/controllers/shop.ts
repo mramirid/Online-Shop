@@ -22,7 +22,6 @@ export const getProducts: RequestHandler = async (req, res) => {
     res.render('shop/product-list', {
       pageTitle: 'All Products',
       path: '/products',
-      isAuthenticated: req.session?.isAuthenticated,
       products
     })
   } catch (error) {
@@ -37,7 +36,6 @@ export const getProduct: RequestHandler = async (req, res) => {
     res.render('shop/product-detail', {
       pageTitle: product!.title,
       path: '/products',
-      isAuthenticated: req.session!.isAuthenticated,
       product
     })
   } catch (error) {
@@ -52,7 +50,6 @@ export const getCart: RequestHandler = async (req, res) => {
     res.render('shop/cart', {
       pageTitle: 'Your Cart',
       path: '/cart',
-      isAuthenticated: req.session!.isAuthenticated,
       products: cartProducts
     })
   } catch (error) {
@@ -114,7 +111,6 @@ export const getOrders: RequestHandler = async (req, res) => {
     res.render('shop/orders', {
       pageTitle: 'Your Orders',
       path: '/orders',
-      isAuthenticated: req.session!.isAuthenticated,
       orders
     })
   } catch (error) {
@@ -125,7 +121,6 @@ export const getOrders: RequestHandler = async (req, res) => {
 export const getCheckout: RequestHandler = (req, res) => {
   res.render('shop/checkout', {
     pageTitle: 'Checkout',
-    path: '/checkout',
-    isAuthenticated: req.session!.isAuthenticated
+    path: '/checkout'
   })
 }
