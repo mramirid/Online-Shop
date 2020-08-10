@@ -26,6 +26,7 @@ export const getSignup: RequestHandler = (req, res) => {
     pageTitle: 'Signup',
     path: '/signup',
     errorMessage: message,
+    validationErrors: [],
     oldInput: { email: '', password: '', confirmPassword: '' }
   })
 }
@@ -39,6 +40,7 @@ export const postSignup: RequestHandler = async (req, res) => {
       pageTitle: 'Signup',
       path: '/signup',
       errorMessage: firstError.msg,
+      validationErrors: errors.array(),
       oldInput: {
         email: req.body.email,
         password: req.body.password,
@@ -87,6 +89,7 @@ export const getLogin: RequestHandler = (req, res) => {
     pageTitle: 'Login',
     path: '/login',
     errorMessage: message,
+    validationErrors: [],
     oldInput: { email: '', password: '' }
   })
 }
@@ -100,6 +103,7 @@ export const postLogin: RequestHandler = async (req, res) => {
       pageTitle: 'Login',
       path: '/login',
       errorMessage: firstError.msg,
+      validationErrors: errors.array(),
       oldInput: {
         email: req.body.email,
         password: req.body.password
