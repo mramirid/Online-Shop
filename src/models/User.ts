@@ -6,6 +6,8 @@ import CustomObjectId from '../utils/CustomObjectId'
 export interface IUser extends Document {
   email: string
   password: string
+  resetToken?: string
+  resetTokenExpiration?: number
   cart: {
     items: {
       productId: CustomObjectId
@@ -27,6 +29,8 @@ const userSchema = new Schema<IUser>({
     type: String,
     required: true
   },
+  resetToken: String,
+  resetTokenExpiration: Date,
   cart: {
     items: [
       {
