@@ -5,6 +5,7 @@ import bcrypt from 'bcryptjs'
 import dotenv from 'dotenv'
 import nodemailer from 'nodemailer'
 import mailgunTransport from 'nodemailer-mailgun-transport'
+import { validationResult } from 'express-validator'
 
 import User from '../models/User'
 
@@ -29,10 +30,21 @@ export const getSignup: RequestHandler = (req, res) => {
 }
 
 export const postSignup: RequestHandler = async (req, res) => {
+  const errors = validationResult(req)
+  const [firstError] = errors.array()
+
+  if (!errors.isEmpty()) {
+    return res.status(422).render('auth/signup', {
+      pageTitle: 'Signup',
+      path: '/signup',
+      errorMessage: firstError.msg
+    })
+  }
+
   try {
     const email = req.body.email as string
     const password = req.body.password as string
-    const _ = req.body.confirmPassword as string
+    const confirmPassword = req.body.confirmPassword as string
 
     const user = await User.findOne({ email })
     if (user) throw 'The email is already used'
@@ -44,6 +56,7 @@ export const postSignup: RequestHandler = async (req, res) => {
       cart: { items: [] }
     })
     await newUser.save()
+
     res.redirect('/login')
 
     nodemailerMailgun.sendMail({
