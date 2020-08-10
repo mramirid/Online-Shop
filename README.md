@@ -45,3 +45,5 @@ $ npm start
 - Module 16 - Sending Emails
 
 - Module 17 - Advanced authentication (Reset password & authorization)
+
+- Module 18 - Validation

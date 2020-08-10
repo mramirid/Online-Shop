@@ -32,6 +32,10 @@ export const getSignup: RequestHandler = (req, res) => {
 }
 
 export const postSignup: RequestHandler = async (req, res) => {
+  const email: string = req.body.email
+  const password: string = req.body.password
+  const confirmPassword: string = req.body.confirmPassword
+
   const inputErrors = validationResult(req)
   const [firstInputError] = inputErrors.array()
 
@@ -41,18 +45,11 @@ export const postSignup: RequestHandler = async (req, res) => {
       path: '/signup',
       errorMessage: firstInputError.msg,
       inputErrors: inputErrors.array(),
-      oldInput: {
-        email: req.body.email,
-        password: req.body.password,
-        confirmPassword: req.body.confirmPassword
-      }
+      oldInput: { email, password, confirmPassword }
     })
   }
 
   try {
-    const email = req.body.email as string
-    const password = req.body.password as string
-
     const hashedPassword = await bcrypt.hash(password, 12)
     const newUser = new User({
       email,
@@ -95,6 +92,9 @@ export const getLogin: RequestHandler = (req, res) => {
 }
 
 export const postLogin: RequestHandler = async (req, res) => {
+  const email: string = req.body.email
+  const password: string = req.body.password
+
   const inputErrors = validationResult(req)
   const [firstInputError] = inputErrors.array()
 
@@ -104,20 +104,17 @@ export const postLogin: RequestHandler = async (req, res) => {
       path: '/login',
       errorMessage: firstInputError.msg,
       inputErrors: inputErrors.array(),
-      oldInput: {
-        email: req.body.email,
-        password: req.body.password
-      }
+      oldInput: { email, password }
     })
   }
 
   try {
     let inputErrors: { param: string }[] = []
 
-    const user = await User.findOne({ email: req.body.email })
+    const user = await User.findOne({ email })
     if (!user) inputErrors.push({ param: 'email' })
 
-    const doMatch = await bcrypt.compare(req.body.password, user?.password || '')
+    const doMatch = await bcrypt.compare(password, user?.password || '')
     if (!doMatch) inputErrors.push({ param: 'password' })
 
     if (!user || !doMatch) {
@@ -126,10 +123,7 @@ export const postLogin: RequestHandler = async (req, res) => {
         path: '/login',
         errorMessage: 'Invalid email or password',
         inputErrors,
-        oldInput: {
-          email: req.body.email,
-          password: req.body.password
-        }
+        oldInput: { email, password }
       })
     }
 

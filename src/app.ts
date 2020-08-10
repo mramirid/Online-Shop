@@ -61,7 +61,7 @@ declare global {
 
 app.use(async (req, _, next) => {
   try {
-    req.user = await User.findOne({ _id: req.session?.user._id }) as IUser
+    req.user = await User.findById(req.session?.user._id) as IUser
   } catch (_) {
     console.log(new Date().getMinutes(), 'req.user will be empty, because user is not authenticated')
   }
