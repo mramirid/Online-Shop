@@ -26,21 +26,21 @@ export const getSignup: RequestHandler = (req, res) => {
     pageTitle: 'Signup',
     path: '/signup',
     errorMessage: message,
-    validationErrors: [],
+    inputErrors: [],
     oldInput: { email: '', password: '', confirmPassword: '' }
   })
 }
 
 export const postSignup: RequestHandler = async (req, res) => {
-  const errors = validationResult(req)
-  const [firstError] = errors.array()
+  const inputErrors = validationResult(req)
+  const [firstInputError] = inputErrors.array()
 
-  if (!errors.isEmpty()) {
+  if (!inputErrors.isEmpty()) {
     return res.status(422).render('auth/signup', {
       pageTitle: 'Signup',
       path: '/signup',
-      errorMessage: firstError.msg,
-      validationErrors: errors.array(),
+      errorMessage: firstInputError.msg,
+      inputErrors: inputErrors.array(),
       oldInput: {
         email: req.body.email,
         password: req.body.password,
@@ -89,21 +89,21 @@ export const getLogin: RequestHandler = (req, res) => {
     pageTitle: 'Login',
     path: '/login',
     errorMessage: message,
-    validationErrors: [],
+    inputErrors: [],
     oldInput: { email: '', password: '' }
   })
 }
 
 export const postLogin: RequestHandler = async (req, res) => {
-  const errors = validationResult(req)
-  const [firstError] = errors.array()
+  const inputErrors = validationResult(req)
+  const [firstInputError] = inputErrors.array()
 
-  if (!errors.isEmpty()) {
+  if (!inputErrors.isEmpty()) {
     return res.status(422).render('auth/login', {
       pageTitle: 'Login',
       path: '/login',
-      errorMessage: firstError.msg,
-      validationErrors: errors.array(),
+      errorMessage: firstInputError.msg,
+      inputErrors: inputErrors.array(),
       oldInput: {
         email: req.body.email,
         password: req.body.password
@@ -112,13 +112,28 @@ export const postLogin: RequestHandler = async (req, res) => {
   }
 
   try {
+    let inputErrors: { param: string }[] = []
+
     const user = await User.findOne({ email: req.body.email })
-    if (!user) throw 'Invalid email or password'
+    if (!user) inputErrors.push({ param: 'email' })
 
-    const doMatch = await bcrypt.compare(req.body.password, user.password)
-    if (!doMatch) throw 'Invalid email or password'
+    const doMatch = await bcrypt.compare(req.body.password, user?.password || '')
+    if (!doMatch) inputErrors.push({ param: 'password' })
 
-    req.session!.user = user
+    if (!user || !doMatch) {
+      return res.status(422).render('auth/login', {
+        pageTitle: 'Login',
+        path: '/login',
+        errorMessage: 'Invalid email or password',
+        inputErrors,
+        oldInput: {
+          email: req.body.email,
+          password: req.body.password
+        }
+      })
+    }
+
+    req.session!.user = user!
     req.session!.isAuthenticated = true
     req.session!.save(error => {
       if (error) throw 'Failed to create session in the database'
@@ -126,8 +141,7 @@ export const postLogin: RequestHandler = async (req, res) => {
     })
 
   } catch (error) {
-    req.flash('error', error)
-    res.redirect('/login')
+    console.log(error)
   }
 }
 
