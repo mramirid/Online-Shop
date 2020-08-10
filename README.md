@@ -40,6 +40,8 @@ $ npm start
 
 - Module 14 - Sessions & Cookies
 
-- Module 15 - Authentication
+- Module 15 - Authentication (Signup & login)
 
 - Module 16 - Sending Emails
+
+- Module 17 - Advanced authentication (Reset password & authorization)

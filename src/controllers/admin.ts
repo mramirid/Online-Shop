@@ -4,7 +4,7 @@ import Product from '../models/Product'
 
 export const getProducts: RequestHandler = async (req, res) => {
   try {
-    const products = await Product.find()
+    const products = await Product.find({ userId: req.user._id })
     res.render('admin/product-list', {
       pageTitle: 'Admin Products',
       path: '/admin/products',
@@ -15,7 +15,7 @@ export const getProducts: RequestHandler = async (req, res) => {
   }
 }
 
-export const getAddProduct: RequestHandler = (req, res) => {
+export const getAddProduct: RequestHandler = (_, res) => {
   res.render('admin/edit-product', {
     pageTitle: 'Add Product',
     path: '/admin/add-product',
@@ -67,14 +67,16 @@ export const postEditProduct: RequestHandler = async (req, res) => {
   try {
     const product = await Product.findById(req.body.productId)
 
-    if (!product) return res.redirect('/')
+    if (product?.userId.toString() !== req.user._id.toString()) {
+      return res.redirect('/')
+    }
 
-    product.title = req.body.title
-    product.price = req.body.price
-    product.imageUrl = req.body.imageUrl
-    product.description = req.body.description
+    product!.title = req.body.title
+    product!.price = req.body.price
+    product!.imageUrl = req.body.imageUrl
+    product!.description = req.body.description
 
-    await product.save()
+    await product!.save()
     console.log('Product updated successfully')
     res.redirect('/admin/products')
 
@@ -85,7 +87,10 @@ export const postEditProduct: RequestHandler = async (req, res) => {
 
 export const postDeleteProduct: RequestHandler = async (req, res) => {
   try {
-    await Product.findByIdAndRemove(req.body.productId)
+    await Product.deleteOne({
+      _id: req.body.productId,
+      userId: req.user._id
+    })
     console.log('Product deleted successfully')
     res.redirect('/admin/products')
   } catch (error) {
