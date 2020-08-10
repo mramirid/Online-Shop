@@ -11,6 +11,7 @@ router.get('/signup', authController.getSignup)
 router.post('/signup',
   [
     check('email')
+      .trim()
       .isEmail()
       .withMessage('Enter a valid email')
       .custom(async value => {
@@ -36,6 +37,7 @@ router.get('/login', authController.getLogin)
 router.post('/login',
   [
     body('email')
+      .trim()
       .isEmail()
       .withMessage('Enter a valid email'),
     body('password', 'Enter your password with only number or text & at least 5 characters')
