@@ -25,7 +25,8 @@ export const getSignup: RequestHandler = (req, res) => {
   res.render('auth/signup', {
     pageTitle: 'Signup',
     path: '/signup',
-    errorMessage: message
+    errorMessage: message,
+    oldInput: { email: '', password: '', confirmPassword: '' }
   })
 }
 
@@ -37,7 +38,12 @@ export const postSignup: RequestHandler = async (req, res) => {
     return res.status(422).render('auth/signup', {
       pageTitle: 'Signup',
       path: '/signup',
-      errorMessage: firstError.msg
+      errorMessage: firstError.msg,
+      oldInput: {
+        email: req.body.email,
+        password: req.body.password,
+        confirmPassword: req.body.confirmPassword
+      }
     })
   }
 
@@ -80,7 +86,8 @@ export const getLogin: RequestHandler = (req, res) => {
   res.render('auth/login', {
     pageTitle: 'Login',
     path: '/login',
-    errorMessage: message
+    errorMessage: message,
+    oldInput: { email: '', password: '' }
   })
 }
 
@@ -92,10 +99,14 @@ export const postLogin: RequestHandler = async (req, res) => {
     return res.status(422).render('auth/login', {
       pageTitle: 'Login',
       path: '/login',
-      errorMessage: firstError.msg
+      errorMessage: firstError.msg,
+      oldInput: {
+        email: req.body.email,
+        password: req.body.password
+      }
     })
   }
-  
+
   try {
     const user = await User.findOne({ email: req.body.email })
     if (!user) throw 'Invalid email or password'
