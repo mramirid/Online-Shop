@@ -44,10 +44,6 @@ export const postSignup: RequestHandler = async (req, res) => {
   try {
     const email = req.body.email as string
     const password = req.body.password as string
-    const confirmPassword = req.body.confirmPassword as string
-
-    const user = await User.findOne({ email })
-    if (user) throw 'The email is already used'
 
     const hashedPassword = await bcrypt.hash(password, 12)
     const newUser = new User({
@@ -76,8 +72,6 @@ export const postSignup: RequestHandler = async (req, res) => {
     })
   } catch (error) {
     console.log(error)
-    req.flash('error', error)
-    res.redirect('/signup')
   }
 }
 
