@@ -8,17 +8,14 @@ const router = express.Router()
 
 router.get('/signup', authController.getSignup)
 
-router.post(
-  '/signup',
+router.post('/signup',
   [
     check('email')
       .isEmail()
-      .withMessage('Please enter a valid email')
+      .withMessage('Enter a valid email')
       .custom(async value => {
         const user = await User.findOne({ email: value })
-        if (user) {
-          throw new Error('The email is already used')
-        }
+        if (user) throw new Error('The email is already used')
       }),
     body('password', 'Enter password with only number or text & at least 5 characters')
       .isLength({ min: 5, max: 30 })
@@ -36,7 +33,17 @@ router.post(
 
 router.get('/login', authController.getLogin)
 
-router.post('/login', authController.postLogin)
+router.post('/login',
+  [
+    body('email')
+      .isEmail()
+      .withMessage('Enter a valid email'),
+    body('password', 'Enter your password with only number or text & at least 5 characters')
+      .isLength({ min: 5, max: 30 })
+      .isAlphanumeric()
+  ],
+  authController.postLogin
+)
 
 router.post('/logout', authController.postLogout)
 

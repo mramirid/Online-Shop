@@ -85,6 +85,17 @@ export const getLogin: RequestHandler = (req, res) => {
 }
 
 export const postLogin: RequestHandler = async (req, res) => {
+  const errors = validationResult(req)
+  const [firstError] = errors.array()
+
+  if (!errors.isEmpty()) {
+    return res.status(422).render('auth/login', {
+      pageTitle: 'Login',
+      path: '/login',
+      errorMessage: firstError.msg
+    })
+  }
+  
   try {
     const user = await User.findOne({ email: req.body.email })
     if (!user) throw 'Invalid email or password'
