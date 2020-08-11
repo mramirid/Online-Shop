@@ -1,3 +1,5 @@
 import path from 'path'
 
-export default path.dirname(require.main!.filename)
+const getActiveDir = path.dirname(require.main!.filename)
+
+export default getActiveDir

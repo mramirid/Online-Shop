@@ -2,6 +2,7 @@ import { RequestHandler } from 'express'
 import { validationResult } from 'express-validator'
 
 import Product from '../models/Product'
+import * as fileHelper from '../utils/file'
 
 export const getProducts: RequestHandler = async (req, res, next) => {
   try {
@@ -124,17 +125,21 @@ export const postEditProduct: RequestHandler = async (req, res, next) => {
   try {
     const image = req.file
     const product = await Product.findById(req.body.productId)
+    if (!product) throw 'No product found'
 
-    if (product?.userId.toString() !== req.user._id.toString()) {
+    if (product.userId.toString() !== req.user._id.toString()) {
       return res.redirect('/')
     }
 
-    product!.title = req.body.title
-    product!.price = req.body.price
-    product!.description = req.body.description
-    if (image) product!.imageUrl = image.filename
+    product.title = req.body.title
+    product.price = req.body.price
+    product.description = req.body.description
+    if (image) {
+      await fileHelper.deleteImage(product.imageUrl)
+      product.imageUrl = image.filename
+    }
 
-    await product!.save()
+    await product.save()
     console.log('Product updated successfully')
     res.redirect('/admin/products')
 
@@ -147,12 +152,18 @@ export const postEditProduct: RequestHandler = async (req, res, next) => {
 
 export const postDeleteProduct: RequestHandler = async (req, res, next) => {
   try {
-    await Product.deleteOne({
-      _id: req.body.productId,
-      userId: req.user._id
-    })
+    const productId = req.body.productId
+    const product = await Product.findById(productId)
+    if (!product) throw 'No product found'
+
+    await Promise.all([
+      fileHelper.deleteImage(product.imageUrl),
+      Product.deleteOne({ _id: productId, userId: req.user._id })
+    ])
+
     console.log('Product deleted successfully')
     res.redirect('/admin/products')
+
   } catch (error) {
     const operationError = new Error(error)
     operationError.httpStatusCode = 500
