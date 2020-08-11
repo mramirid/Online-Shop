@@ -2,9 +2,10 @@ import fs from 'fs'
 import path from 'path'
 
 import { RequestHandler } from 'express'
+import PDFDocument from 'pdfkit'
 
 import Product from '../models/Product'
-import Order from '../models/Order'
+import Order, { IOrder } from '../models/Order'
 import activeDir from '../utils/path'
 
 export const getIndex: RequestHandler = async (_, res, next) => {
@@ -140,13 +141,13 @@ export const postOrder: RequestHandler = async (req, res, next) => {
 
 export const getInvoice: RequestHandler = async (req, res, next) => {
   const orderId = req.params.orderId
-
+  let order: IOrder | null
   try {
-    const order = await Order.findById(orderId)
-    if (!order) throw {statusCode: 404, message: 'No order found'}
+    order = await Order.findById(orderId)
+    if (!order) throw { statusCode: 404, message: 'No order found' }
 
     if (order.user.userId.toString() !== req.user._id.toString()) {
-      throw {statusCode: 401, message: 'Unauthorized'}
+      throw { statusCode: 401, message: 'Unauthorized' }
     }
   } catch (error) {
     const operationError = new Error(error.message)
@@ -157,8 +158,25 @@ export const getInvoice: RequestHandler = async (req, res, next) => {
   const invoiceName = `invoice-${orderId}.pdf`
   const invoicePath = path.join(activeDir, 'data', 'invoices', invoiceName)
 
-  const file = fs.createReadStream(invoicePath)
   res.setHeader('Content-Type', 'application/pdf')
   res.setHeader('Content-Disposition', `inline; filename=${invoiceName}`)
+
+  const pdfDoc = new PDFDocument()
+  pdfDoc.pipe(fs.createWriteStream(invoicePath))
+  pdfDoc.pipe(res)
+
+  pdfDoc.fontSize(26).text('Invoice', { underline: true })
+  pdfDoc.text('------------------------------------------------------')
+  let totalPrice = 0
+  order.products.forEach(orderProduct => {
+    pdfDoc.fontSize(16).text(`${orderProduct.product.title}, price: (${orderProduct.quantity} x $${orderProduct.product.price})`)
+    totalPrice += (orderProduct.quantity * orderProduct.product.price)
+  })
+  pdfDoc.fontSize(26).text('------------------------------------------------------')
+  pdfDoc.fontSize(18).text(`Total price: $${totalPrice}`)
+  pdfDoc.end()
+
+  const file = fs.createReadStream(invoicePath)
+
   file.pipe(res)
 }
