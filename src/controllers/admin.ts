@@ -30,11 +30,25 @@ export const getAddProduct: RequestHandler = (_, res) => {
 }
 
 export const postAddProduct: RequestHandler = async (req, res, next) => {
-  const title: string = req.body.title
+  const title = req.body.title
   const price = +req.body.price
-  const imageUrl: string = req.body.imageUrl
-  const description: string = req.body.description
+  const image = req.file
+  const description = req.body.description
   const userId = req.user._id
+
+  if (!image) {
+    return res.status(422).render('admin/edit-product', {
+      pageTitle: 'Add Product',
+      path: '/admin/add-product',
+      isEdit: false,
+      hasError: true,
+      errorMessage: 'Attached file is not an image',
+      inputErrors: [],
+      product: { title, price, description }
+    })
+  }
+
+  const imageUrl = image.filename
 
   const inputErrors = validationResult(req)
   const [firstInputError] = inputErrors.array()
@@ -47,7 +61,7 @@ export const postAddProduct: RequestHandler = async (req, res, next) => {
       hasError: true,
       errorMessage: firstInputError.msg,
       inputErrors: inputErrors.array(),
-      product: { title, price, imageUrl, description, userId }
+      product: { title, price, imageUrl, description }
     })
   }
 
@@ -102,13 +116,13 @@ export const postEditProduct: RequestHandler = async (req, res, next) => {
         _id: req.body.productId,
         title: req.body.title,
         price: +req.body.price,
-        imageUrl: req.body.imageUrl,
         description: req.body.description
       }
     })
   }
 
   try {
+    const image = req.file
     const product = await Product.findById(req.body.productId)
 
     if (product?.userId.toString() !== req.user._id.toString()) {
@@ -117,8 +131,8 @@ export const postEditProduct: RequestHandler = async (req, res, next) => {
 
     product!.title = req.body.title
     product!.price = req.body.price
-    product!.imageUrl = req.body.imageUrl
     product!.description = req.body.description
+    if (image) product!.imageUrl = image.filename
 
     await product!.save()
     console.log('Product updated successfully')

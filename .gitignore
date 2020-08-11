@@ -1,8 +1,9 @@
 node_modules
 dist/**/**.js
 dist/**/**.js.map
+dist/images
 
-!dist/public/js/main.js
+!dist/public/**.js
 
 package-lock.json
 message.txt
