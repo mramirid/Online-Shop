@@ -143,22 +143,22 @@ export const getInvoice: RequestHandler = async (req, res, next) => {
 
   try {
     const order = await Order.findById(orderId)
-    if (!order) throw new Error('No order found')
+    if (!order) throw {statusCode: 404, message: 'No order found'}
 
     if (order.user.userId.toString() !== req.user._id.toString()) {
-      throw new Error('Unauthorized')
+      throw {statusCode: 401, message: 'Unauthorized'}
     }
   } catch (error) {
-    return next(error)
+    const operationError = new Error(error.message)
+    operationError.httpStatusCode = error.statusCode
+    return next(operationError)
   }
 
   const invoiceName = `invoice-${orderId}.pdf`
   const invoicePath = path.join(activeDir, 'data', 'invoices', invoiceName)
 
-  fs.readFile(invoicePath, (error, data) => {
-    if (error) return next(error)
-    res.setHeader('Content-Type', 'application/pdf')
-    res.setHeader('Content-Disposition', `inline; filename=${invoiceName}`)
-    res.send(data)
-  })
+  const file = fs.createReadStream(invoicePath)
+  res.setHeader('Content-Type', 'application/pdf')
+  res.setHeader('Content-Disposition', `inline; filename=${invoiceName}`)
+  file.pipe(res)
 }

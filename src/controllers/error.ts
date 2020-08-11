@@ -8,7 +8,7 @@ export const get404: RequestHandler = (_, res) => {
 }
 
 export const serverErrorHandler: ErrorRequestHandler = (err, _, res, __) => {
-  console.log(err.message)
+  console.log(err.httpStatusCode, err.message)
   res.status(500).render('500', {
     pageTitle: 'Internal Server Error',
     path: '/500'
