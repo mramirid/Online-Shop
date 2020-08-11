@@ -61,9 +61,11 @@ declare global {
 
 app.use(async (req, _, next) => {
   try {
-    req.user = await User.findById(req.session?.user._id) as IUser
-  } catch (_) {
-    console.log(new Date().getMinutes(), 'req.user will be empty, because user is not authenticated')
+    const user = await User.findById(req.session?.user._id) as IUser
+    if (!user) throw new Error('User not found in the db')
+    req.user = user
+  } catch (error) {
+    console.log('req.user is undefined.', error.message)
   }
   next()
 })
