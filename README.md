@@ -47,3 +47,5 @@ $ npm start
 - Module 17 - Advanced authentication (Reset password & authorization)
 
 - Module 18 - Validation
+
+- Module 19 - Error handling

@@ -3,7 +3,7 @@ import { validationResult } from 'express-validator'
 
 import Product from '../models/Product'
 
-export const getProducts: RequestHandler = async (req, res) => {
+export const getProducts: RequestHandler = async (req, res, next) => {
   try {
     const products = await Product.find({ userId: req.user._id })
     res.render('admin/product-list', {
@@ -12,7 +12,9 @@ export const getProducts: RequestHandler = async (req, res) => {
       products
     })
   } catch (error) {
-    console.log(error)
+    const operationError = new Error(error)
+    operationError.httpStatusCode = 500
+    next(operationError)
   }
 }
 
@@ -27,7 +29,7 @@ export const getAddProduct: RequestHandler = (_, res) => {
   })
 }
 
-export const postAddProduct: RequestHandler = async (req, res) => {
+export const postAddProduct: RequestHandler = async (req, res, next) => {
   const title: string = req.body.title
   const price = +req.body.price
   const imageUrl: string = req.body.imageUrl
@@ -40,7 +42,7 @@ export const postAddProduct: RequestHandler = async (req, res) => {
   if (!inputErrors.isEmpty()) {
     return res.status(422).render('admin/edit-product', {
       pageTitle: 'Add Product',
-      path: '/admin/edit-product',
+      path: '/admin/add-product',
       isEdit: false,
       hasError: true,
       errorMessage: firstInputError.msg,
@@ -55,11 +57,13 @@ export const postAddProduct: RequestHandler = async (req, res) => {
     console.log('Product created successfully')
     res.redirect('/admin/products')
   } catch (error) {
-    console.log(error)
+    const operationError = new Error(error)
+    operationError.httpStatusCode = 500
+    next(operationError)
   }
 }
 
-export const getEditProduct: RequestHandler = async (req, res) => {
+export const getEditProduct: RequestHandler = async (req, res, next) => {
   const editMode = req.query.edit
   if (!editMode) return res.redirect('/')
 
@@ -76,11 +80,13 @@ export const getEditProduct: RequestHandler = async (req, res) => {
       product
     })
   } catch (error) {
-    console.log(error)
+    const operationError = new Error(error)
+    operationError.httpStatusCode = 500
+    next(operationError)
   }
 }
 
-export const postEditProduct: RequestHandler = async (req, res) => {
+export const postEditProduct: RequestHandler = async (req, res, next) => {
   const inputErrors = validationResult(req)
   const [firstInputError] = inputErrors.array()
 
@@ -119,11 +125,13 @@ export const postEditProduct: RequestHandler = async (req, res) => {
     res.redirect('/admin/products')
 
   } catch (error) {
-    console.log(error)
+    const operationError = new Error(error)
+    operationError.httpStatusCode = 500
+    next(operationError)
   }
 }
 
-export const postDeleteProduct: RequestHandler = async (req, res) => {
+export const postDeleteProduct: RequestHandler = async (req, res, next) => {
   try {
     await Product.deleteOne({
       _id: req.body.productId,
@@ -132,6 +140,8 @@ export const postDeleteProduct: RequestHandler = async (req, res) => {
     console.log('Product deleted successfully')
     res.redirect('/admin/products')
   } catch (error) {
-    console.log(error)
+    const operationError = new Error(error)
+    operationError.httpStatusCode = 500
+    next(operationError)
   }
 }

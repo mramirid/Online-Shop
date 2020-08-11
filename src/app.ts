@@ -16,6 +16,16 @@ import authRoutes from './routes/auth'
 import * as errorController from './controllers/error'
 import User, { IUser } from './models/User'
 
+// Customize the express Session interface
+declare global {
+  export interface Error { httpStatusCode: number }
+
+  namespace Express {
+    export interface Request { user: IUser }
+    export interface Session { user: IUser; isAuthenticated: boolean }
+  }
+}
+
 const app = express()
 
 dotenv.config()
@@ -45,34 +55,31 @@ app.use(session({
 app.use(csrf())
 app.use(flash())
 
-// Customize the express Session interface
-declare global {
-  namespace Express {
-    export interface Session {
-      user: IUser
-      isAuthenticated: boolean
-    }
-
-    export interface Request {
-      user: IUser
-    }
-  }
-}
-
-app.use(async (req, _, next) => {
-  try {
-    const user = await User.findById(req.session?.user._id) as IUser
-    if (!user) throw new Error('User not found in the db')
-    req.user = user
-  } catch (error) {
-    console.log('req.user is undefined.', error.message)
-  }
-  next()
-})
-
 app.use((req, res, next) => {
   res.locals.isAuthenticated = req.session?.isAuthenticated
   res.locals.csrfToken = req.csrfToken()
+  next()
+})
+
+app.use(async (req, _, next) => {
+  try {
+    if (!req.session?.user) throw new Error('User has no session')
+
+    let user: IUser
+    try {
+      user = await User.findById(req.session.user._id) as IUser
+    } catch (error) {
+      const operationError = new Error(error)
+      operationError.httpStatusCode = 500
+      return next(operationError)
+    }
+
+    if (!user) throw new Error('User not found in the db')
+    req.user = user
+
+  } catch (error) {
+    console.log('req.user is undefined.', error.message)
+  }
   next()
 })
 
@@ -80,6 +87,7 @@ app.use('/admin', adminRoutes)
 app.use(shopRoutes)
 app.use(authRoutes)
 app.use(errorController.get404)
+app.use(errorController.serverErrorHandler)
 
 mongoose.connect(MONGODB_URL, {
   useNewUrlParser: true,

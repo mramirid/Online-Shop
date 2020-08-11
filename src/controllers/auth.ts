@@ -31,7 +31,7 @@ export const getSignup: RequestHandler = (req, res) => {
   })
 }
 
-export const postSignup: RequestHandler = async (req, res) => {
+export const postSignup: RequestHandler = async (req, res, next) => {
   const email: string = req.body.email
   const password: string = req.body.password
   const confirmPassword: string = req.body.confirmPassword
@@ -76,7 +76,9 @@ export const postSignup: RequestHandler = async (req, res) => {
       console.log('Cannot send reg email', error)
     })
   } catch (error) {
-    console.log(error)
+    const operationError = new Error(error)
+    operationError.httpStatusCode = 500
+    next(operationError)
   }
 }
 
@@ -91,7 +93,7 @@ export const getLogin: RequestHandler = (req, res) => {
   })
 }
 
-export const postLogin: RequestHandler = async (req, res) => {
+export const postLogin: RequestHandler = async (req, res, next) => {
   const email: string = req.body.email
   const password: string = req.body.password
 
@@ -133,9 +135,10 @@ export const postLogin: RequestHandler = async (req, res) => {
       if (error) throw 'Failed to create session in the database'
       res.redirect('/')
     })
-
   } catch (error) {
-    console.log(error)
+    const operationError = new Error(error)
+    operationError.httpStatusCode = 500
+    next(operationError)
   }
 }
 
@@ -155,7 +158,7 @@ export const getReset: RequestHandler = (req, res) => {
   })
 }
 
-export const postReset: RequestHandler = (req, res) => {
+export const postReset: RequestHandler = (req, res, next) => {
   crypto.randomBytes(32, async (error, buffer) => {
     if (error) {
       console.log(error)
@@ -196,12 +199,14 @@ export const postReset: RequestHandler = (req, res) => {
         console.log('Cannot send reset pass email', error)
       })
     } catch (error) {
-      console.log(error)
+      const operationError = new Error(error)
+      operationError.httpStatusCode = 500
+      next(operationError)
     }
   })
 }
 
-export const getNewPassword: RequestHandler = async (req, res) => {
+export const getNewPassword: RequestHandler = async (req, res, next) => {
   try {
     const token = req.params.token
     const user = await User.findOne({
@@ -218,11 +223,13 @@ export const getNewPassword: RequestHandler = async (req, res) => {
       passwordToken: token
     })
   } catch (error) {
-    console.log(error)
+    const operationError = new Error(error)
+    operationError.httpStatusCode = 500
+    next(operationError)
   }
 }
 
-export const postNewPassword: RequestHandler = async (req, res) => {
+export const postNewPassword: RequestHandler = async (req, res, next) => {
   try {
     const newPassword = req.body.password
     const userId = req.body.userId
@@ -242,6 +249,8 @@ export const postNewPassword: RequestHandler = async (req, res) => {
     res.redirect('/login')
 
   } catch (error) {
-    console.log(error)
+    const operationError = new Error(error)
+    operationError.httpStatusCode = 500
+    next(operationError)
   }
 }

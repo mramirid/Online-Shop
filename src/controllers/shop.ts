@@ -3,7 +3,7 @@ import { RequestHandler } from 'express'
 import Product from '../models/Product'
 import Order from '../models/Order'
 
-export const getIndex: RequestHandler = async (_, res) => {
+export const getIndex: RequestHandler = async (_, res, next) => {
   try {
     const products = await Product.find()
     res.render('shop/index', {
@@ -12,11 +12,13 @@ export const getIndex: RequestHandler = async (_, res) => {
       products
     })
   } catch (error) {
-    console.log(error)
+    const operationError = new Error(error)
+    operationError.httpStatusCode = 500
+    next(operationError)
   }
 }
 
-export const getProducts: RequestHandler = async (req, res) => {
+export const getProducts: RequestHandler = async (_, res, next) => {
   try {
     const products = await Product.find()
     res.render('shop/product-list', {
@@ -25,11 +27,13 @@ export const getProducts: RequestHandler = async (req, res) => {
       products
     })
   } catch (error) {
-    console.log(error)
+    const operationError = new Error(error)
+    operationError.httpStatusCode = 500
+    next(operationError)
   }
 }
 
-export const getProduct: RequestHandler = async (req, res) => {
+export const getProduct: RequestHandler = async (req, res, next) => {
   const productId = req.params.productId
   try {
     const product = await Product.findById(productId)
@@ -39,11 +43,13 @@ export const getProduct: RequestHandler = async (req, res) => {
       product
     })
   } catch (error) {
-    console.log(error)
+    const operationError = new Error(error)
+    operationError.httpStatusCode = 500
+    next(operationError)
   }
 }
 
-export const getCart: RequestHandler = async (req, res) => {
+export const getCart: RequestHandler = async (req, res, next) => {
   try {
     const userAndCart = await req.user.populate('cart.items.productId').execPopulate()
     const cartProducts = userAndCart.cart.items
@@ -53,32 +59,38 @@ export const getCart: RequestHandler = async (req, res) => {
       products: cartProducts
     })
   } catch (error) {
-    console.log(error)
+    const operationError = new Error(error)
+    operationError.httpStatusCode = 500
+    next(operationError)
   }
 }
 
-export const postCart: RequestHandler = async (req, res) => {
+export const postCart: RequestHandler = async (req, res, next) => {
   try {
     const productId = req.body.productId
     const product = await Product.findById(productId)
     await req.user.addToCart(product!)
     res.redirect('/cart')
   } catch (error) {
-    console.log(error)
+    const operationError = new Error(error)
+    operationError.httpStatusCode = 500
+    next(operationError)
   }
 }
 
-export const postCartDeleteProduct: RequestHandler = async (req, res) => {
+export const postCartDeleteProduct: RequestHandler = async (req, res, next) => {
   try {
     const productId = req.body.productId
     await req.user.removeFromCart(productId)
     res.redirect('/cart')
   } catch (error) {
-    console.log(error)
+    const operationError = new Error(error)
+    operationError.httpStatusCode = 500
+    next(operationError)
   }
 }
 
-export const postOrder: RequestHandler = async (req, res) => {
+export const postOrder: RequestHandler = async (req, res, next) => {
   try {
     const userAndCart = await req.user.populate('cart.items.productId').execPopulate()
     const cartProducts = userAndCart.cart.items.map(cartProduct => {
@@ -101,11 +113,13 @@ export const postOrder: RequestHandler = async (req, res) => {
     res.redirect('/orders')
 
   } catch (error) {
-    console.log(error)
+    const operationError = new Error(error)
+    operationError.httpStatusCode = 500
+    next(operationError)
   }
 }
 
-export const getOrders: RequestHandler = async (req, res) => {
+export const getOrders: RequestHandler = async (req, res, next) => {
   try {
     const orders = await Order.find({ 'user.userId': req.user._id })
     res.render('shop/orders', {
@@ -114,13 +128,16 @@ export const getOrders: RequestHandler = async (req, res) => {
       orders
     })
   } catch (error) {
-    console.log(error)
+    const operationError = new Error(error)
+    operationError.httpStatusCode = 500
+    next(operationError)
   }
 }
 
-export const getCheckout: RequestHandler = (req, res) => {
+export const getCheckout: RequestHandler = (_, res) => {
   res.render('shop/checkout', {
     pageTitle: 'Checkout',
-    path: '/checkout'
+    path: '/checkout',
+    isAuthenticated: false
   })
 }
