@@ -49,13 +49,13 @@ app.set('view engine', 'ejs')
 app.set('views', 'dist/views')
 
 app.use(express.static(path.join(activeDir, 'public')))
-app.use(express.static(path.join(activeDir, 'images')))
+app.use(express.static(path.join(activeDir, 'data', 'images')))
 
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(multer({
   storage: multer.diskStorage({
     destination: (_, __, callback) => {
-      callback(null, 'dist/images')
+      callback(null, 'dist/data/images')
     },
     filename: (_, file, callback) => {
       callback(null, `${uuidv4()}-${file.originalname}`)
@@ -93,24 +93,18 @@ app.use((req, res, next) => {
 })
 
 app.use(async (req, _, next) => {
+  if (!req.session?.user) return next()
+
   try {
-    if (!req.session?.user) throw new Error('User has no session')
-
-    let user: IUser
-    try {
-      user = await User.findById(req.session.user._id) as IUser
-    } catch (error) {
-      const operationError = new Error(error)
-      operationError.httpStatusCode = 500
-      return next(operationError)
-    }
-
-    if (!user) throw new Error('User not found in the db')
+    const user = await User.findById(req.session.user._id) as IUser
+    if (!user) throw 'User not found in the database'
     req.user = user
-
   } catch (error) {
-    console.log('req.user is undefined.', error.message)
+    const operationError = new Error(error)
+    operationError.httpStatusCode = 500
+    return next(operationError)
   }
+
   next()
 })
 

@@ -11,6 +11,7 @@
       "restart": true,
       "runtimeExecutable": "nodemon",
       "program": "${workspaceFolder}\\dist\\app.js",
+      "console": "integratedTerminal"
     }
   ]
 }

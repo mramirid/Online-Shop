@@ -1,7 +1,11 @@
+import fs from 'fs'
+import path from 'path'
+
 import { RequestHandler } from 'express'
 
 import Product from '../models/Product'
 import Order from '../models/Order'
+import activeDir from '../utils/path'
 
 export const getIndex: RequestHandler = async (_, res, next) => {
   try {
@@ -90,6 +94,21 @@ export const postCartDeleteProduct: RequestHandler = async (req, res, next) => {
   }
 }
 
+export const getOrders: RequestHandler = async (req, res, next) => {
+  try {
+    const orders = await Order.find({ 'user.userId': req.user._id })
+    res.render('shop/orders', {
+      pageTitle: 'Your Orders',
+      path: '/orders',
+      orders
+    })
+  } catch (error) {
+    const operationError = new Error(error)
+    operationError.httpStatusCode = 500
+    next(operationError)
+  }
+}
+
 export const postOrder: RequestHandler = async (req, res, next) => {
   try {
     const userAndCart = await req.user.populate('cart.items.productId').execPopulate()
@@ -119,25 +138,27 @@ export const postOrder: RequestHandler = async (req, res, next) => {
   }
 }
 
-export const getOrders: RequestHandler = async (req, res, next) => {
-  try {
-    const orders = await Order.find({ 'user.userId': req.user._id })
-    res.render('shop/orders', {
-      pageTitle: 'Your Orders',
-      path: '/orders',
-      orders
-    })
-  } catch (error) {
-    const operationError = new Error(error)
-    operationError.httpStatusCode = 500
-    next(operationError)
-  }
-}
+export const getInvoice: RequestHandler = async (req, res, next) => {
+  const orderId = req.params.orderId
 
-export const getCheckout: RequestHandler = (_, res) => {
-  res.render('shop/checkout', {
-    pageTitle: 'Checkout',
-    path: '/checkout',
-    isAuthenticated: false
+  try {
+    const order = await Order.findById(orderId)
+    if (!order) throw new Error('No order found')
+
+    if (order.user.userId.toString() !== req.user._id.toString()) {
+      throw new Error('Unauthorized')
+    }
+  } catch (error) {
+    return next(error)
+  }
+
+  const invoiceName = `invoice-${orderId}.pdf`
+  const invoicePath = path.join(activeDir, 'data', 'invoices', invoiceName)
+
+  fs.readFile(invoicePath, (error, data) => {
+    if (error) return next(error)
+    res.setHeader('Content-Type', 'application/pdf')
+    res.setHeader('Content-Disposition', `inline; filename=${invoiceName}`)
+    res.send(data)
   })
 }
