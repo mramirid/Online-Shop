@@ -4,7 +4,7 @@ import { validationResult } from 'express-validator'
 import Product from '../models/Product'
 import * as fileHelper from '../utils/file'
 
-const ITEMS_PER_PAGE = 1
+const ITEMS_PER_PAGE = 2
 
 export const getProducts: RequestHandler = async (req, res, next) => {
   try {
@@ -166,11 +166,11 @@ export const postEditProduct: RequestHandler = async (req, res, next) => {
   }
 }
 
-export const postDeleteProduct: RequestHandler = async (req, res, next) => {
+export const deleteProduct: RequestHandler = async (req, res, _) => {
   try {
-    const productId = req.body.productId
+    const productId = req.params.productId
     const product = await Product.findById(productId)
-    if (!product) throw 'No product found'
+    if (!product) throw new Error('No product found')
 
     await Promise.all([
       fileHelper.deleteImage(product.imageUrl),
@@ -178,11 +178,9 @@ export const postDeleteProduct: RequestHandler = async (req, res, next) => {
     ])
 
     console.log('Product deleted successfully')
-    res.redirect('/admin/products')
+    res.status(200).json({ message: 'Deleting product success' })
 
   } catch (error) {
-    const operationError = new Error(error)
-    operationError.httpStatusCode = 500
-    next(operationError)
+    res.status(500).json({ message: 'Deleting product failed' })
   }
 }

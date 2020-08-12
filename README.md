@@ -53,3 +53,5 @@ $ npm start
 - Module 20 - File upload/download & generating pdf on the server side
 
 - Module 21 - Pagination
+
+- Module 22 - Async requests

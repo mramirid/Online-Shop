@@ -8,7 +8,7 @@ import Product from '../models/Product'
 import Order, { IOrder } from '../models/Order'
 import activeDir from '../utils/path'
 
-const ITEMS_PER_PAGE = 1
+const ITEMS_PER_PAGE = 2
 
 export const getIndex: RequestHandler = async (req, res, next) => {
   try {
