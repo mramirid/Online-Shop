@@ -118,10 +118,8 @@ app.use(errorController.serverErrorHandler)
 mongoose.connect(MONGODB_URL, {
   useNewUrlParser: true,
   useUnifiedTopology: true
+}).then(_ => {
+  app.listen(3000)
+}).catch(error => {
+  console.log('MongoDB connection failed:', error)
 })
-  .then(_ => {
-    app.listen(3000)
-  })
-  .catch(error => {
-    console.log('MongoDB connection failed:', error)
-  })

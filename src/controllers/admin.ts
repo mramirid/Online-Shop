@@ -4,13 +4,29 @@ import { validationResult } from 'express-validator'
 import Product from '../models/Product'
 import * as fileHelper from '../utils/file'
 
+const ITEMS_PER_PAGE = 1
+
 export const getProducts: RequestHandler = async (req, res, next) => {
   try {
-    const products = await Product.find({ userId: req.user._id })
+    const page = req.query.page ? +req.query.page : 1
+
+    const [totalProducts, products] = await Promise.all([
+      Product.find().countDocuments(),
+      Product.find({ userId: req.user._id })
+        .skip((page - 1) * ITEMS_PER_PAGE)
+        .limit(ITEMS_PER_PAGE)
+    ])
+
     res.render('admin/product-list', {
       pageTitle: 'Admin Products',
       path: '/admin/products',
-      products
+      products,
+      hasNextPage: ITEMS_PER_PAGE * page < totalProducts,
+      hasPrevPage: page > 1,
+      nextPage: page + 1,
+      prevPage: page - 1,
+      curPage: page,
+      lastPage: Math.ceil(totalProducts / ITEMS_PER_PAGE)
     })
   } catch (error) {
     const operationError = new Error(error)

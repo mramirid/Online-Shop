@@ -51,3 +51,5 @@ $ npm start
 - Module 19 - Error handling
 
 - Module 20 - File upload/download & generating pdf on the server side
+
+- Module 21 - Pagination
