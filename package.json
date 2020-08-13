@@ -26,6 +26,7 @@
     "nodemailer": "^6.4.11",
     "nodemailer-mailgun-transport": "^2.0.0",
     "pdfkit": "^0.11.0",
+    "stripe": "^8.84.0",
     "uuid": "^8.3.0"
   },
   "devDependencies": {

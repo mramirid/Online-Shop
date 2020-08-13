@@ -1,26 +1,32 @@
 # Online Shop
 
-On progress
+Simple MVC online shop with Node, TypeScript, MongoDB & Express framework
+
+<p align="center">
+  <img src="https://i.ibb.co/CzcxYVR/Annotation-2020-08-13-231616.png" alt="SS">
+</p>
 
 ## How to run?
 
 1. Create a Mongo Atlas cluster & connect this app to your cluster (fill the .env)
 
-2. You need to configure your own mailgun (fill the .env)
+2. You need to configure your own Mailgun to make sending email functionality works (fill the .env)
 
-2. Run npm install
+3. Also configure your own Stripe to make the online payment functionality works (fill the .env)
+
+4. Run npm install
 
 ```bash 
 $ npm install
 ```
 
-3. Compile the TypeScript sources
+5. Compile the TypeScript sources
 
 ```bash 
 $ tsc --watch
 ```
 
-4. Run nodemon using my configuration
+6. Run nodemon using my configuration
 
 ```bash 
 $ npm start
@@ -55,3 +61,5 @@ $ npm start
 - Module 21 - Pagination
 
 - Module 22 - Async requests
+
+- Module 23 - Online payments (using Stripe)

@@ -1,7 +1,6 @@
 import mongoose, { Schema, Document } from 'mongoose'
 
 import { IProduct } from './Product'
-import CustomObjectId from '../utils/CustomObjectId'
 
 export interface IUser extends Document {
   email: string
@@ -10,7 +9,7 @@ export interface IUser extends Document {
   resetTokenExpiration?: number
   cart: {
     items: {
-      productId: CustomObjectId
+      productId: IProduct & Schema.Types.ObjectId
       quantity: number
     }[]
   }
@@ -35,7 +34,7 @@ const userSchema = new Schema<IUser>({
     items: [
       {
         productId: {
-          type: CustomObjectId,
+          type: Schema.Types.ObjectId,
           ref: 'Product',
           required: true
         },

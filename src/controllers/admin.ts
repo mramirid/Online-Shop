@@ -4,7 +4,7 @@ import { validationResult } from 'express-validator'
 import Product from '../models/Product'
 import * as fileHelper from '../utils/file'
 
-const ITEMS_PER_PAGE = 2
+const ITEMS_PER_PAGE = 3
 
 export const getProducts: RequestHandler = async (req, res, next) => {
   try {

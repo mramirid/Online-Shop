@@ -3,12 +3,18 @@ import path from 'path'
 
 import { RequestHandler } from 'express'
 import PDFDocument from 'pdfkit'
+import dotenv from 'dotenv'
+import Stripe from 'stripe'
 
 import Product from '../models/Product'
 import Order, { IOrder } from '../models/Order'
 import activeDir from '../utils/path'
 
-const ITEMS_PER_PAGE = 2
+dotenv.config()
+
+const ITEMS_PER_PAGE = 3
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: '2020-03-02' })
 
 export const getIndex: RequestHandler = async (req, res, next) => {
   try {
@@ -121,14 +127,37 @@ export const postCartDeleteProduct: RequestHandler = async (req, res, next) => {
   }
 }
 
-export const getOrders: RequestHandler = async (req, res, next) => {
+export const getCheckout: RequestHandler = async (req, res, next) => {
   try {
-    const orders = await Order.find({ 'user.userId': req.user._id })
-    res.render('shop/orders', {
-      pageTitle: 'Your Orders',
-      path: '/orders',
-      orders
+    const userAndCart = await req.user.populate('cart.items.productId').execPopulate()
+    const cartProducts = userAndCart.cart.items
+    const totalPrice = cartProducts.reduce((total, cartProduct) => {
+      return total + (cartProduct.quantity * cartProduct.productId.price)
+    }, 0)
+
+    const stripeSession = await stripe.checkout.sessions.create({
+      payment_method_types: ['card'],
+      line_items: cartProducts.map(cartProduct => {
+        return {
+          name: cartProduct.productId.title,
+          description: cartProduct.productId.description,
+          amount: cartProduct.productId.price * 100,
+          currency: 'usd',
+          quantity: cartProduct.quantity
+        }
+      }),
+      success_url: `${req.protocol}://${req.get('host')}/checkout/success`,
+      cancel_url: `${req.protocol}://${req.get('host')}/checkout/cancel`
     })
+
+    res.render('shop/checkout', {
+      pageTitle: 'Checkout',
+      path: '/checkout',
+      products: cartProducts,
+      totalPrice,
+      stripeSessionId: stripeSession.id
+    })
+
   } catch (error) {
     const operationError = new Error(error)
     operationError.httpStatusCode = 500
@@ -136,13 +165,13 @@ export const getOrders: RequestHandler = async (req, res, next) => {
   }
 }
 
-export const postOrder: RequestHandler = async (req, res, next) => {
+export const getCheckoutSuccess: RequestHandler = async (req, res, next) => {
   try {
     const userAndCart = await req.user.populate('cart.items.productId').execPopulate()
     const cartProducts = userAndCart.cart.items.map(cartProduct => {
       return {
         quantity: cartProduct.quantity,
-        product: { ...cartProduct.productId._doc }
+        product: cartProduct.productId.toObject()
       }
     })
 
@@ -154,10 +183,24 @@ export const postOrder: RequestHandler = async (req, res, next) => {
       products: cartProducts
     })
 
-    await order.save()
-    await req.user.clearCart()
+    await Promise.all([order.save(), req.user.clearCart()])
     res.redirect('/orders')
 
+  } catch (error) {
+    const operationError = new Error(error)
+    operationError.httpStatusCode = 500
+    next(operationError)
+  }
+}
+
+export const getOrders: RequestHandler = async (req, res, next) => {
+  try {
+    const orders = await Order.find({ 'user.userId': req.user._id })
+    res.render('shop/orders', {
+      pageTitle: 'Your Orders',
+      path: '/orders',
+      orders
+    })
   } catch (error) {
     const operationError = new Error(error)
     operationError.httpStatusCode = 500

@@ -119,7 +119,7 @@ mongoose.connect(MONGODB_URL, {
   useNewUrlParser: true,
   useUnifiedTopology: true
 }).then(_ => {
-  app.listen(3000)
+  app.listen(3060)
 }).catch(error => {
   console.log('MongoDB connection failed:', error)
 })
