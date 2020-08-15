@@ -2,6 +2,8 @@
 
 Simple MVC online shop with Node, TypeScript, MongoDB & Express framework
 
+<br>
+
 <p align="center">
   <img src="https://i.ibb.co/CzcxYVR/Annotation-2020-08-13-231616.png" alt="SS">
 </p>
@@ -20,13 +22,13 @@ Simple MVC online shop with Node, TypeScript, MongoDB & Express framework
 $ npm install
 ```
 
-5. Compile the TypeScript sources
+5. Watch & compile all TypeScript sources
 
 ```bash 
 $ tsc --watch
 ```
 
-6. Run nodemon using my configuration
+6. Run the server
 
 ```bash 
 $ npm start
