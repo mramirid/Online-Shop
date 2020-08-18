@@ -7,3 +7,4 @@ dist/data
 
 package-lock.json
 .env
+access.log

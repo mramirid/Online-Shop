@@ -1,4 +1,5 @@
 import path from 'path'
+import fs from 'fs'
 
 import express from 'express'
 import bodyParser from 'body-parser'
@@ -12,6 +13,7 @@ import flash from 'connect-flash'
 import { v4 as uuidv4 } from 'uuid'
 import helmet from 'helmet'
 import compression from 'compression'
+import morgan from 'morgan'
 
 import activeDir from './utils/path'
 import adminRoutes from './routes/admin'
@@ -20,7 +22,8 @@ import authRoutes from './routes/auth'
 import * as errorController from './controllers/error'
 import User, { IUser } from './models/User'
 
-/* --- Customize built-in interfaces --- */
+/* --------------- Customize built-in interfaces --------------- */
+
 declare global {
   export interface Error { httpStatusCode: number }
 
@@ -30,7 +33,8 @@ declare global {
   }
 }
 
-/* --- Setup MongoDB connection --- */
+/* --------------- Setup MongoDB connection --------------- */
+
 dotenv.config()
 const cluster = process.env.CLUSTER_NAME
 const dbname = process.env.DB_NAME
@@ -44,7 +48,8 @@ const mongoDBStore = new MongoDBStore({
   collection: 'sessions'
 })
 
-/* --- Setup express extensions & helper middlewares --- */
+/* --------- Setup express extensions & helper middlewares --------- */
+
 const app = express()
 
 app.set('view engine', 'ejs')
@@ -57,7 +62,12 @@ app.use(helmet())
 
 app.use(compression())
 
+app.use(morgan('combined', {
+  stream: fs.createWriteStream(path.join(activeDir, '..', 'access.log'), { flags: 'a' })
+}))
+
 app.use(bodyParser.urlencoded({ extended: false }))
+
 app.use(multer({
   storage: multer.diskStorage({
     destination: (_, __, callback) => {
@@ -91,7 +101,8 @@ app.use(csrf())
 
 app.use(flash())
 
-/* --- Setup our middlewares --- */
+/* ------------------ Setup our middlewares ------------------ */
+
 app.use((req, res, next) => {
   res.locals.isAuthenticated = req.session?.isAuthenticated
   res.locals.csrfToken = req.csrfToken()
@@ -121,6 +132,7 @@ app.use(errorController.get404)
 app.use(errorController.serverErrorHandler)
 
 /* --- Start server after MongoDB connection is established --- */
+
 mongoose.connect(MONGODB_URL, {
   useNewUrlParser: true,
   useUnifiedTopology: true
