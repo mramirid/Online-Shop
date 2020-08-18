@@ -2,14 +2,11 @@ import crypto from 'crypto'
 
 import { RequestHandler } from "express"
 import bcrypt from 'bcryptjs'
-import dotenv from 'dotenv'
 import nodemailer from 'nodemailer'
 import mailgunTransport from 'nodemailer-mailgun-transport'
 import { validationResult } from 'express-validator'
 
 import User from '../models/User'
-
-dotenv.config()
 
 const nodemailerMailgun = nodemailer.createTransport(
   mailgunTransport({

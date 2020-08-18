@@ -1,11 +1,9 @@
 import path from 'path'
 import fs from 'fs'
-import https from 'https'
 
 import express from 'express'
 import bodyParser from 'body-parser'
 import multer from 'multer'
-import dotenv from 'dotenv'
 import mongoose from 'mongoose'
 import session from 'express-session'
 import connectMongoDBSession from 'connect-mongodb-session'
@@ -36,7 +34,6 @@ declare global {
 
 /* --------------- Setup MongoDB connection --------------- */
 
-dotenv.config()
 const cluster = process.env.CLUSTER_NAME
 const dbname = process.env.DB_NAME
 const username = process.env.DB_USERNAME
@@ -132,20 +129,13 @@ app.use(authRoutes)
 app.use(errorController.get404)
 app.use(errorController.serverErrorHandler)
 
-/* --------------- Setup SSL private & public keys --------------- */
-
-const privateKey = fs.readFileSync('server.key')
-const certificate = fs.readFileSync('server.cert')
-
 /* --- Start server after MongoDB connection is established --- */
 
 mongoose.connect(MONGODB_URL, {
   useNewUrlParser: true,
   useUnifiedTopology: true
 }).then(_ => {
-  https
-    .createServer({ key: privateKey, cert: certificate }, app)
-    .listen(process.env.PORT || 3000)
+  app.listen(process.env.PORT || 3000)
 }).catch(error => {
   console.log('MongoDB connection failed:', error)
 })
