@@ -1,4 +1,13 @@
+node_modules
+dist/**/**.js
 dist/**/**.js.map
+dist/data
+
+!dist/public/**.js
+
+package-lock.json
+.env
+access.log
 server.cert
 server.key
-node_modules
+*.js

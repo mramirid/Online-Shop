@@ -3,11 +3,14 @@ import path from 'path'
 
 import { RequestHandler } from 'express'
 import PDFDocument from 'pdfkit'
+import dotenv from 'dotenv'
 import Stripe from 'stripe'
 
 import Product from '../models/Product'
 import Order, { IOrder } from '../models/Order'
 import activeDir from '../utils/path'
+
+dotenv.config()
 
 const ITEMS_PER_PAGE = 3
 

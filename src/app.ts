@@ -4,6 +4,7 @@ import fs from 'fs'
 import express from 'express'
 import bodyParser from 'body-parser'
 import multer from 'multer'
+import dotenv from 'dotenv'
 import mongoose from 'mongoose'
 import session from 'express-session'
 import connectMongoDBSession from 'connect-mongodb-session'
@@ -20,6 +21,8 @@ import shopRoutes from './routes/shop'
 import authRoutes from './routes/auth'
 import * as errorController from './controllers/error'
 import User, { IUser } from './models/User'
+
+dotenv.config()
 
 /* --------------- Customize built-in interfaces --------------- */
 
