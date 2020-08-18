@@ -1,5 +1,6 @@
 import path from 'path'
 import fs from 'fs'
+import https from 'https'
 
 import express from 'express'
 import bodyParser from 'body-parser'
@@ -131,13 +132,20 @@ app.use(authRoutes)
 app.use(errorController.get404)
 app.use(errorController.serverErrorHandler)
 
+/* --------------- Setup SSL private & public keys --------------- */
+
+const privateKey = fs.readFileSync('server.key')
+const certificate = fs.readFileSync('server.cert')
+
 /* --- Start server after MongoDB connection is established --- */
 
 mongoose.connect(MONGODB_URL, {
   useNewUrlParser: true,
   useUnifiedTopology: true
 }).then(_ => {
-  app.listen(process.env.PORT || 3000)
+  https
+    .createServer({ key: privateKey, cert: certificate }, app)
+    .listen(process.env.PORT || 3000)
 }).catch(error => {
   console.log('MongoDB connection failed:', error)
 })

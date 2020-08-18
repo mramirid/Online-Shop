@@ -65,3 +65,5 @@ $ npm start
 - Module 22 - Async requests
 
 - Module 23 - Online payments (using Stripe)
+
+- Module 29 - Deploying the app
