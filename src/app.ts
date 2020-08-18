@@ -11,6 +11,7 @@ import csrf from 'csurf'
 import flash from 'connect-flash'
 import { v4 as uuidv4 } from 'uuid'
 import helmet from 'helmet'
+import compression from 'compression'
 
 import activeDir from './utils/path'
 import adminRoutes from './routes/admin'
@@ -53,6 +54,8 @@ app.use(express.static(path.join(activeDir, 'public')))
 app.use(express.static(path.join(activeDir, 'data', 'images')))
 
 app.use(helmet())
+
+app.use(compression())
 
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(multer({
