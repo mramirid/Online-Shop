@@ -10,6 +10,7 @@ import connectMongoDBSession from 'connect-mongodb-session'
 import csrf from 'csurf'
 import flash from 'connect-flash'
 import { v4 as uuidv4 } from 'uuid'
+import helmet from 'helmet'
 
 import activeDir from './utils/path'
 import adminRoutes from './routes/admin'
@@ -50,6 +51,8 @@ app.set('views', 'dist/views')
 
 app.use(express.static(path.join(activeDir, 'public')))
 app.use(express.static(path.join(activeDir, 'data', 'images')))
+
+app.use(helmet())
 
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(multer({
@@ -119,7 +122,7 @@ mongoose.connect(MONGODB_URL, {
   useNewUrlParser: true,
   useUnifiedTopology: true
 }).then(_ => {
-  app.listen(3060)
+  app.listen(process.env.PORT || 3000)
 }).catch(error => {
   console.log('MongoDB connection failed:', error)
 })
