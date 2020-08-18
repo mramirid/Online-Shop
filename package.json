@@ -1,15 +1,11 @@
 {
   "name": "online-shop",
-  "version": "1.0.0",
-  "description": "Simple online shop with Node, TypeScript & Express framework",
+  "version": "1.29.0",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon dist/app.js"
+    "start": "node dist/app.js",
+    "start:dev": "nodemon dist/app.js"
   },
-  "keywords": [
-    "typescript"
-  ],
   "author": "mramirid",
   "license": "ISC",
   "dependencies": {
